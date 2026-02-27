@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Kärlek & Närvaro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@200;300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --warm: #c4855a;
+      --blush: #e8c4a0;
+      --cream: #faf5ee;
+      --deep: #2a1a0e;
+      --mid: #6b3f22;
+      --rose: #d4846a;
+      --gold: #c9a06e;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Josefin Sans', sans-serif;
+      background: var(--cream);
+      color: var(--deep);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      position: relative;
+    }
+
+    /* Texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Background decorative circles */
+    .bg-deco {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .bg-deco-1 {
+      width: 320px; height: 320px;
+      background: radial-gradient(circle, rgba(196,133,90,0.12), transparent 70%);
+      top: -80px; right: -80px;
+    }
+    .bg-deco-2 {
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, rgba(212,132,106,0.1), transparent 70%);
+      bottom: -60px; left: -60px;
+    }
+
+    .app {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 390px;
+      padding: 40px 32px 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+
+    .header-icon {
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: block;
+      animation: heartbeat 3s ease-in-out infinite;
+    }
+
+    @keyframes heartbeat {
+      0%, 100% { transform: scale(1); }
+      15% { transform: scale(1.15); }
+      30% { transform: scale(1); }
+      45% { transform: scale(1.08); }
+      60% { transform: scale(1); }
+    }
+
+    .header-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--warm);
+    }
+
+    /* Date strip */
+    .date-strip {
+      font-size: 13px;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    /* Card */
+    .card {
+      width: 100%;
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(196,133,90,0.2);
+      border-radius: 24px;
+      padding: 36px 28px 32px;
+      box-shadow:
+        0 4px 30px rgba(107,63,34,0.07),
+        0 1px 0 rgba(255,255,255,0.9) inset;
+      position: relative;
+      overflow: hidden;
+      animation: fadeSlideIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+    }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Decorative corner line */
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 16px; left: 16px; right: 16px;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(196,133,90,0.3), transparent);
+    }
+
+    .tip-category {
+      font-size: 11px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .tip-category::before {
+      content: '';
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: var(--rose);
+      opacity: 0.6;
+    }
+
+    .tip-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 72px;
+      font-weight: 300;
+      color: rgba(196,133,90,0.08);
+      line-height: 1;
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-style: italic;
+    }
+
+    .tip-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      line-height: 1.55;
+      color: var(--deep);
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .tip-description {
+      font-size: 14px;
+      font-weight: 200;
+      letter-spacing: 0.05em;
+      line-height: 1.7;
+      color: var(--mid);
+      opacity: 0.85;
+    }
+
+
+
+    /* Footer */
+    .footer {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="bg-deco bg-deco-1"></div>
+  <div class="bg-deco bg-deco-2"></div>
+
+  <div class="app">
+    <div class="header">
+      <span class="header-icon">♡</span>
+      <div class="header-title">Kärlek & Närvaro</div>
+    </div>
+
+    <div class="date-strip" id="dateStrip"></div>
+
+    <div class="card" id="card">
+      <div class="tip-number" id="tipNumber"></div>
+      <div class="tip-category" id="tipCategory"></div>
+      <div class="tip-text" id="tipText"></div>
+      <div class="tip-description" id="tipDesc"></div>
+    </div>
+
+    <div class="footer">Varje dag ett litet steg</div>
+  </div>
+
+  <script>
+    const tips = [
+      {
+        category: "Närvaro",
+        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.",
+        desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns."
+      },
+      {
+        category: "Uppskattning",
+        text: "Berätta för din partner något specifikt du beundrar hos dem idag.",
+        desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge."
+      },
+      {
+        category: "Beröring",
+        text: "En lång kram, minst 20 sekunder, utan orsak.",
+        desc: "Forskning visar att en kram på 20 sekunder frisätter oxytocin — kroppens bindningshormon. Inget behöver sägas."
+      },
+      {
+        category: "Lyssna djupt",
+        text: "Ställ en fråga om din partners dag och lyssna utan att avbryta.",
+        desc: "Försök att förstå deras upplevelse, inte lösa deras problem. Ibland är det att bli lyssnad på som betyder mest."
+      },
+      {
+        category: "Liten gest",
+        text: "Gör något litet som du vet att din partner uppskattar — utan att bli ombedd.",
+        desc: "Det behöver inte vara stort. Kaffe på morgonen, en lapp på kudden, att sköta något de annars gör. Uppmärksamheten är poängen."
+      },
+      {
+        category: "Minnen",
+        text: "Dela ett favoritminne ni har tillsammans.",
+        desc: "Att återuppleva gemensamma minnen stärker bandet. Det påminner er om varför ni valde varandra."
+      },
+      {
+        category: "Ord",
+        text: "Skicka ett meddelande mitt på dagen bara för att säga att du tänker på dem.",
+        desc: "En enkel mening — utan agenda, utan fråga — visar att din partner finns i dina tankar under dagen."
+      },
+      {
+        category: "Tid för två",
+        text: "Planera något ni kan se fram emot tillsammans, stort eller litet.",
+        desc: "Att ha något att längta efter skapar en positiv energi i relationen. Även en enkel promenad kan bli ett äventyr."
+      },
+      {
+        category: "Ursäkt",
+        text: "Om det finns något olöst — ta det första steget mot försoning idag.",
+        desc: "Det kräver mod att gå tillbaka och rätta till något. Men det skapar tillit och visar att relationen är viktigare än att ha rätt."
+      },
+      {
+        category: "Förvåna",
+        text: "Gör något oväntat som du vet gör din partner glad.",
+        desc: "Rutiner är trygga, men spontanitet håller kärleken levande. Tänk på vad som brukade glädja dem — och gör det."
+      },
+      {
+        category: "Lär dig mer",
+        text: "Fråga din partner om en dröm eller ett mål du kanske inte känner till.",
+        desc: "Även i långa relationer finns djup att utforska. Nyfiken kärlek är kärlek som aldrig åldras."
+      },
+      {
+        category: "Acceptans",
+        text: "Lägg märke till något du annars brukar kritisera — och välj att acceptera det idag.",
+        desc: "Att acceptera sin partner som de är, snarare än som vi vill att de ska vara, är en av kärlekens vackraste uttryck."
+      },
+      {
+        category: "Skratt",
+        text: "Hitta något ni kan skratta åt tillsammans idag.",
+        desc: "Gemensamt skratt är lim. Det lindrar spänning, skapar intimitet och påminner er om att ni är vänner."
+      },
+      {
+        category: "Stöd",
+        text: "Fråga: Finns det något jag kan göra för att underlätta din dag?",
+        desc: "Att erbjuda sig att hjälpa — och verkligen mena det — visar att du ser din partner och bryr dig om deras välmående."
+      },
+      {
+        category: "Romantik",
+        text: "Tänd ljus ikväll. Ät tillsammans utan distraktioner.",
+        desc: "Det behövs ingen speciell anledning. Stämning skapar utrymme för samtal, kontakt och mjukhet."
+      },
+      {
+        category: "Gränser",
+        text: "Fråga din partner om de behöver tid för sig själva — och respektera svaret.",
+        desc: "Att respektera din partners behov av enskildhet är ett tecken på mogen kärlek. Utrymme är inte avvisning."
+      },
+      {
+        category: "Kropp & Sinne",
+        text: "Prova något nytt tillsammans — en ny aktivitet, mat eller plats.",
+        desc: "Nya upplevelser frigör dopamin, som hjärnan associerar med din partner. Det väcker känslan av förälskelse."
+      },
+      {
+        category: "Tacksamhet",
+        text: "Skriv ner tre saker du är tacksam för i din relation.",
+        desc: "Tacksamhet riktar uppmärksamheten mot det goda. Det förändrar hur vi ser på vår partner och vår vardag."
+      },
+      {
+        category: "Ärlighet",
+        text: "Dela något du känner men sällan säger.",
+        desc: "Sårbarhet bygger intimitet. Att dela det osagda — en rädsla, en dröm, en tack — skapar djupare kontakt."
+      },
+      {
+        category: "Hänsyn",
+        text: "Gör dig redo 10 minuter innan ni ska iväg — för din partners skull.",
+        desc: "Små hänsyn visar respekt. Det berättar: 'Jag värdesätter din tid. Du betyder något.'"
+      },
+      {
+        category: "Kärlek & Handling",
+        text: "Visa kärlek på det sätt din partner faktiskt tar emot den bäst.",
+        desc: "Vi ger ofta kärlek på det sätt vi själva vill ha den. Fundera på om din partner föredrar ord, handlingar, beröring, tid eller gåvor."
+      },
+      {
+        category: "Reflektion",
+        text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?",
+        desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?"
+      }
+    ];
+
+    function getDayOfYear() {
+      const now = new Date();
+      const start = new Date(now.getFullYear(), 0, 0);
+      const diff = now - start;
+      const oneDay = 1000 * 60 * 60 * 24;
+      return Math.floor(diff / oneDay);
+    }
+
+    function formatDate() {
+      const d = new Date();
+      const days = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'];
+      const months = ['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'];
+      return `${days[d.getDay()]} · ${d.getDate()} ${months[d.getMonth()]}`;
+    }
+
+    const todayIndex = getDayOfYear() % tips.length;
+
+    function renderTip() {
+      const tip = tips[todayIndex];
+      document.getElementById('tipNumber').textContent = String(todayIndex + 1).padStart(2, '0');
+      document.getElementById('tipCategory').textContent = tip.category;
+      document.getElementById('tipText').textContent = tip.text;
+      document.getElementById('tipDesc').textContent = tip.desc;
+    }
+
+    document.getElementById('dateStrip').textContent = formatDate();
+    renderTip();
+  </script>
+</body>
+</html>
