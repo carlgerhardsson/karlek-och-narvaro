@@ -9,188 +9,123 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Josefin+Sans:wght@200;300&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --warm: #c4855a;
-      --blush: #e8c4a0;
-      --cream: #faf5ee;
-      --deep: #2a1a0e;
-      --mid: #6b3f22;
-      --rose: #d4846a;
-      --gold: #c9a06e;
+      --warm: #c4855a; --blush: #e8c4a0; --cream: #faf5ee;
+      --deep: #2a1a0e; --mid: #6b3f22; --rose: #d4846a; --gold: #c9a06e;
+      --green: #7aaa6e; --red: #c46a5a;
     }
-
-    html, body {
-      height: 100%;
-      overflow: hidden;
-    }
-
+    html, body { height: 100%; overflow: hidden; }
     body {
       font-family: 'Josefin Sans', sans-serif;
-      background: var(--cream);
-      color: var(--deep);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      min-height: -webkit-fill-available;
-      position: relative;
+      background: var(--cream); color: var(--deep);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; min-height: -webkit-fill-available; position: relative;
     }
-
     body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
+      content: ''; position: fixed; inset: 0;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none;
-      z-index: 0;
+      pointer-events: none; z-index: 0;
     }
-
     .bg-deco { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
     .bg-deco-1 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(196,133,90,0.12), transparent 70%); top: -80px; right: -80px; }
     .bg-deco-2 { width: 260px; height: 260px; background: radial-gradient(circle, rgba(212,132,106,0.1), transparent 70%); bottom: -60px; left: -60px; }
 
-    /* ── SCREENS ── */
     .screen {
-      display: none;
-      position: relative;
-      z-index: 1;
-      width: 100%;
-      max-width: 390px;
-      padding: 44px 32px 52px;
-      flex-direction: column;
-      align-items: center;
-      overflow-y: auto;
-      max-height: 100vh;
+      display: none; position: relative; z-index: 1; width: 100%; max-width: 390px;
+      padding: 44px 32px 52px; flex-direction: column; align-items: center;
+      overflow-y: auto; max-height: 100vh;
     }
     .screen.active { display: flex; }
 
-    /* ── HEADER ── */
     .header { text-align: center; margin-bottom: 32px; }
-    .header-icon {
-      font-size: 28px; margin-bottom: 10px; display: block;
-      animation: heartbeat 3s ease-in-out infinite;
-    }
+    .header-icon { font-size: 28px; margin-bottom: 10px; display: block; animation: heartbeat 3s ease-in-out infinite; }
     @keyframes heartbeat {
-      0%, 100% { transform: scale(1); }
-      15% { transform: scale(1.15); }
-      30% { transform: scale(1); }
-      45% { transform: scale(1.08); }
-      60% { transform: scale(1); }
+      0%, 100% { transform: scale(1); } 15% { transform: scale(1.15); }
+      30% { transform: scale(1); } 45% { transform: scale(1.08); } 60% { transform: scale(1); }
     }
     .header-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 16px; font-weight: 300;
+      font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 300;
       letter-spacing: 0.3em; text-transform: uppercase; color: var(--warm);
     }
-
     .date-strip {
-      font-size: 13px; font-weight: 200;
-      letter-spacing: 0.25em; text-transform: uppercase;
+      font-size: 13px; font-weight: 200; letter-spacing: 0.25em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 28px; text-align: center;
     }
 
     /* ── CARD ── */
     .card {
-      width: 100%;
-      background: rgba(255,255,255,0.65);
+      width: 100%; background: rgba(255,255,255,0.65);
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(196,133,90,0.2); border-radius: 24px;
-      padding: 36px 28px 32px;
+      border: 1px solid rgba(196,133,90,0.2); border-radius: 24px; padding: 36px 28px 32px;
       box-shadow: 0 4px 30px rgba(107,63,34,0.07), 0 1px 0 rgba(255,255,255,0.9) inset;
-      position: relative; overflow: hidden;
-      animation: fadeIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+      position: relative; overflow: hidden; animation: fadeIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
     }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
     .card::before {
       content: ''; position: absolute; top: 16px; left: 16px; right: 16px; height: 1px;
       background: linear-gradient(to right, transparent, rgba(196,133,90,0.3), transparent);
     }
-
     .tip-category {
-      font-size: 11px; font-weight: 300; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--rose);
-      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 300; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
     }
     .tip-category::before { content: ''; display: block; width: 20px; height: 1px; background: var(--rose); opacity: 0.6; }
-
     .tip-number {
       font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300;
-      color: rgba(196,133,90,0.08); line-height: 1;
-      position: absolute; top: 24px; right: 24px; font-style: italic;
+      color: rgba(196,133,90,0.08); line-height: 1; position: absolute; top: 24px; right: 24px; font-style: italic;
     }
     .tip-text {
-      font-family: 'Cormorant Garamond', serif; font-size: 28px;
-      font-weight: 300; line-height: 1.55; color: var(--deep);
-      margin-bottom: 20px; font-style: italic;
+      font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300;
+      line-height: 1.55; color: var(--deep); margin-bottom: 20px; font-style: italic;
     }
     .tip-description {
-      font-size: 14px; font-weight: 200; letter-spacing: 0.05em;
-      line-height: 1.7; color: var(--mid); opacity: 0.85;
+      font-size: 14px; font-weight: 200; letter-spacing: 0.05em; line-height: 1.7; color: var(--mid); opacity: 0.85;
     }
 
     /* ── BUTTONS ── */
     .heart-btn {
-      margin-top: 28px; background: none;
-      border: 1px solid rgba(196,133,90,0.35); border-radius: 50px;
-      padding: 14px 36px;
-      font-family: 'Josefin Sans', sans-serif; font-size: 11px;
-      font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase;
-      color: var(--warm); cursor: pointer; transition: all 0.3s ease;
-      -webkit-tap-highlight-color: transparent;
+      margin-top: 28px; background: none; border: 1px solid rgba(196,133,90,0.35); border-radius: 50px;
+      padding: 14px 36px; font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 300;
+      letter-spacing: 0.25em; text-transform: uppercase; color: var(--warm); cursor: pointer;
+      transition: all 0.3s ease; -webkit-tap-highlight-color: transparent;
     }
     .heart-btn:active { background: rgba(196,133,90,0.1); transform: scale(0.97); }
-
     .primary-btn {
-      width: 100%; background: var(--warm); border: none; border-radius: 50px;
-      padding: 16px;
+      width: 100%; background: var(--warm); border: none; border-radius: 50px; padding: 16px;
       font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 300;
-      letter-spacing: 0.25em; text-transform: uppercase; color: white;
-      cursor: pointer; transition: all 0.3s ease;
-      -webkit-tap-highlight-color: transparent; margin-top: 4px;
+      letter-spacing: 0.25em; text-transform: uppercase; color: white; cursor: pointer;
+      transition: all 0.3s ease; -webkit-tap-highlight-color: transparent; margin-top: 4px;
     }
     .primary-btn:active { background: var(--mid); transform: scale(0.98); }
     .primary-btn:disabled { opacity: 0.4; pointer-events: none; }
-
     .footer {
-      margin-top: 24px; text-align: center; font-size: 11px;
-      font-weight: 200; letter-spacing: 0.2em; text-transform: uppercase;
-      color: rgba(107,63,34,0.35);
+      margin-top: 24px; text-align: center; font-size: 11px; font-weight: 200;
+      letter-spacing: 0.2em; text-transform: uppercase; color: rgba(107,63,34,0.35);
     }
     .back-link {
-      font-size: 11px; font-weight: 200; letter-spacing: 0.2em;
-      text-transform: uppercase; color: rgba(107,63,34,0.45);
-      cursor: pointer; margin-bottom: 24px; align-self: flex-start;
+      font-size: 11px; font-weight: 200; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(107,63,34,0.45); cursor: pointer; margin-bottom: 24px; align-self: flex-start;
       -webkit-tap-highlight-color: transparent;
     }
     .back-link:active { color: var(--warm); }
 
     /* ── SETUP ── */
     .setup-title {
-      font-family: 'Cormorant Garamond', serif; font-size: 26px;
-      font-weight: 300; font-style: italic; color: var(--deep);
-      text-align: center; margin-bottom: 8px;
+      font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300;
+      font-style: italic; color: var(--deep); text-align: center; margin-bottom: 8px;
     }
     .setup-sub {
-      font-size: 12px; font-weight: 200; letter-spacing: 0.08em;
-      color: var(--mid); opacity: 0.7; text-align: center;
-      margin-bottom: 30px; line-height: 1.7;
+      font-size: 12px; font-weight: 200; letter-spacing: 0.08em; color: var(--mid); opacity: 0.7;
+      text-align: center; margin-bottom: 30px; line-height: 1.7;
     }
     .field-label {
-      font-size: 10px; font-weight: 300; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 8px; align-self: flex-start;
+      font-size: 10px; font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 8px; align-self: flex-start;
     }
     .field-input {
-      width: 100%; background: rgba(255,255,255,0.7);
-      border: 1px solid rgba(196,133,90,0.25); border-radius: 12px;
-      padding: 14px 18px;
-      font-family: 'Josefin Sans', sans-serif; font-size: 15px;
-      font-weight: 300; color: var(--deep); outline: none;
+      width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(196,133,90,0.25);
+      border-radius: 12px; padding: 14px 18px; font-family: 'Josefin Sans', sans-serif;
+      font-size: 15px; font-weight: 300; color: var(--deep); outline: none;
       margin-bottom: 20px; transition: border-color 0.2s;
     }
     .field-input:focus { border-color: var(--warm); }
@@ -199,64 +134,82 @@
 
     /* ── QUIZ ── */
     .pair-badge {
-      font-size: 11px; font-weight: 200; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 20px; text-align: center;
+      font-size: 11px; font-weight: 200; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 20px; text-align: center;
     }
     .question-label {
-      font-size: 11px; font-weight: 300; letter-spacing: 0.3em;
-      text-transform: uppercase; color: var(--rose);
-      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 300; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
     }
     .question-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--rose); opacity: 0.6; }
-
     .question-text {
-      font-family: 'Cormorant Garamond', serif; font-size: 26px;
-      font-weight: 300; font-style: italic; line-height: 1.5;
-      color: var(--deep); margin-bottom: 24px;
+      font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300;
+      font-style: italic; line-height: 1.5; color: var(--deep); margin-bottom: 22px;
     }
-    .answer-input {
-      width: 100%; background: rgba(255,255,255,0.7);
-      border: 1px solid rgba(196,133,90,0.25); border-radius: 14px;
-      padding: 14px 18px;
-      font-family: 'Josefin Sans', sans-serif; font-size: 14px;
-      font-weight: 200; color: var(--deep); outline: none;
-      resize: none; min-height: 90px; line-height: 1.6;
-      transition: border-color 0.2s; margin-bottom: 14px;
-    }
-    .answer-input:focus { border-color: var(--warm); }
-    .answer-input::placeholder { color: rgba(107,63,34,0.3); }
 
-    /* ── ANSWERS ── */
-    .answers-wrap { width: 100%; display: flex; flex-direction: column; gap: 12px; }
-    .answer-bubble {
-      background: rgba(255,255,255,0.65);
-      border: 1px solid rgba(196,133,90,0.18); border-radius: 18px;
-      padding: 18px 20px;
+    /* ── OPTIONS ── */
+    .options-wrap { width: 100%; display: flex; flex-direction: column; gap: 10px; }
+    .option-btn {
+      width: 100%; background: rgba(255,255,255,0.55); border: 1px solid rgba(196,133,90,0.25);
+      border-radius: 14px; padding: 14px 18px; text-align: left;
+      font-family: 'Josefin Sans', sans-serif; font-size: 13px; font-weight: 300;
+      color: var(--deep); cursor: pointer; transition: all 0.25s ease;
+      -webkit-tap-highlight-color: transparent; line-height: 1.5;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .option-btn:active { transform: scale(0.98); }
+    .option-btn.selected { background: rgba(196,133,90,0.15); border-color: var(--warm); color: var(--warm); }
+    .option-btn.correct  { background: rgba(122,170,110,0.15); border-color: var(--green); color: #4a7a40; }
+    .option-btn.wrong    { background: rgba(196,106,90,0.1);   border-color: var(--red);   color: var(--red); }
+    .option-btn:disabled { pointer-events: none; opacity: 0.7; }
+    .option-letter {
+      width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 300; letter-spacing: 0.05em; flex-shrink: 0;
+    }
+
+    /* ── RESULTS ── */
+    .results-wrap { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    .result-bubble {
+      background: rgba(255,255,255,0.65); border: 1px solid rgba(196,133,90,0.18);
+      border-radius: 16px; padding: 14px 18px;
       animation: fadeIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
-    .answer-bubble.mine { border-color: rgba(196,133,90,0.45); }
-    .bubble-name {
+    .result-bubble.correct { border-color: var(--green); }
+    .result-bubble.wrong   { border-color: var(--red); }
+    .result-left { display: flex; flex-direction: column; gap: 4px; }
+    .result-name {
       font-size: 9px; font-weight: 300; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+      text-transform: uppercase; color: var(--gold);
     }
-    .bubble-text {
-      font-family: 'Cormorant Garamond', serif; font-size: 18px;
-      font-weight: 300; font-style: italic; line-height: 1.55; color: var(--deep);
+    .result-answer {
+      font-family: 'Cormorant Garamond', serif; font-size: 16px;
+      font-weight: 300; font-style: italic; color: var(--deep); line-height: 1.4;
     }
+    .result-icon { font-size: 18px; flex-shrink: 0; }
+
+    .correct-reveal {
+      margin-top: 14px; padding: 12px 16px;
+      background: rgba(122,170,110,0.1); border: 1px solid rgba(122,170,110,0.3);
+      border-radius: 12px; font-size: 12px; font-weight: 200; letter-spacing: 0.05em;
+      color: #4a7a40; line-height: 1.6; text-align: center;
+    }
+    .correct-reveal strong {
+      display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      margin-bottom: 4px; font-weight: 300;
+    }
+
     .waiting-msg {
-      font-size: 12px; font-weight: 200; letter-spacing: 0.08em;
-      color: var(--mid); opacity: 0.6; text-align: center;
-      margin-top: 18px; line-height: 1.6;
+      font-size: 12px; font-weight: 200; letter-spacing: 0.08em; color: var(--mid); opacity: 0.6;
+      text-align: center; margin-top: 16px; line-height: 1.6;
     }
-    .waiting-dots::after {
-      content: ''; animation: dots 1.5s steps(3, end) infinite;
-    }
+    .waiting-dots::after { content: ''; animation: dots 1.5s steps(3, end) infinite; }
     @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
 
     .reset-link {
-      margin-top: 20px; font-size: 10px; letter-spacing: 0.2em;
-      text-transform: uppercase; color: rgba(107,63,34,0.35);
-      cursor: pointer; text-align: center;
+      margin-top: 20px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(107,63,34,0.35); cursor: pointer; text-align: center;
     }
     .reset-link:active { color: var(--warm); }
   </style>
@@ -265,7 +218,7 @@
   <div class="bg-deco bg-deco-1"></div>
   <div class="bg-deco bg-deco-2"></div>
 
-  <!-- ══ SKÄRM 1: HEM ══ -->
+  <!-- ══ HEM ══ -->
   <div class="screen active" id="screenHome">
     <div class="header">
       <span class="header-icon">♡</span>
@@ -282,7 +235,7 @@
     <div class="footer">Varje dag ett litet steg</div>
   </div>
 
-  <!-- ══ SKÄRM 2: INSTÄLLNING ══ -->
+  <!-- ══ INSTÄLLNING ══ -->
   <div class="screen" id="screenSetup">
     <div class="header">
       <span class="header-icon">♡</span>
@@ -299,7 +252,7 @@
     <button class="primary-btn" onclick="saveSetup()">Fortsätt →</button>
   </div>
 
-  <!-- ══ SKÄRM 3: FRÅGA ══ -->
+  <!-- ══ QUIZ ══ -->
   <div class="screen" id="screenQuiz">
     <div class="header">
       <span class="header-icon">♡</span>
@@ -312,13 +265,15 @@
       <div class="question-label">Dagens fråga</div>
       <div class="question-text" id="questionText"></div>
 
-      <div id="answerInputArea">
-        <textarea class="answer-input" id="answerInput" placeholder="Skriv ditt svar…"></textarea>
-        <button class="primary-btn" onclick="submitAnswer()">Skicka svar</button>
+      <!-- Svarsalternativ -->
+      <div id="optionsArea">
+        <div class="options-wrap" id="optionsWrap"></div>
       </div>
 
-      <div id="answersArea" style="display:none">
-        <div class="answers-wrap" id="answersWrap"></div>
+      <!-- Resultat efter svar -->
+      <div id="resultsArea" style="display:none">
+        <div class="results-wrap" id="resultsWrap"></div>
+        <div id="correctReveal" class="correct-reveal" style="display:none"></div>
         <div class="waiting-msg" id="waitingMsg"></div>
       </div>
     </div>
@@ -326,10 +281,8 @@
     <div class="reset-link" onclick="resetSetup()">Byt parkod / namn</div>
   </div>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey:            "AIzaSyA6qXrBJLPhFIflfeGUr6KBaomjx45_78Y",
@@ -341,10 +294,10 @@
       appId:             "1:211166470227:web:d66bcf6bf4bd9e391e66a6",
       measurementId:     "G-Q0ZN7HRR8D"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    // ── TIPS ──────────────────────────────────
     const tips = [
       { category: "Närvaro",        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.", desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns." },
       { category: "Uppskattning",   text: "Berätta för din partner något specifikt du beundrar hos dem idag.", desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge." },
@@ -370,33 +323,132 @@
       { category: "Reflektion",     text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?", desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?" }
     ];
 
+    // ── QUIZ-FRÅGOR med tre alternativ ────────
+    // correct = index för rätt svar (0, 1 eller 2)
     const questions = [
-      "Vilket minne från oss tillsammans ger dig mest värme när du tänker på det?",
-      "Vad är något du aldrig har berättat för mig men gärna vill?",
-      "Vad är din största dröm för de närmaste fem åren?",
-      "Vilket ögonblick i vår relation har betytt mest för dig?",
-      "Vad är det du uppskattar mest med mig men sällan säger?",
-      "Vad är din rädsla i vår relation, och hur kan jag stötta dig bättre?",
-      "Vilken version av dig själv hoppas du att jag ser?",
-      "Om du fick välja ett ögonblick att leva om med mig, vilket skulle det vara?",
-      "Vad fick dig att bli kär i mig från början?",
-      "Hur vill du att vi ska må som par om tio år?",
-      "Vad är det svåraste du har gått igenom, och vad lärde det dig?",
-      "Vad behöver du mer av i vår relation just nu?",
-      "Om vi kunde åka vart som helst imorgon utan begränsningar — vart skulle du välja?",
-      "Vilket av mina vanor tycker du är mest charmigt på ett löjligt sätt?",
-      "Om vår relation var en film — vilken genre skulle det vara?",
-      "Vad är det konstigaste du tycker om med mig?",
-      "Om du fick döpa om oss till ett parnamn, vad skulle vi heta?",
-      "Vilket djur liknar jag mest, och varför?",
-      "Om du fick en superhjältekraft för en dag — vad skulle du använda den till för vår skull?",
-      "Vad är den bästa måltiden vi ätit tillsammans?",
-      "Vilket ämne skulle du vilja lära dig mer om — helt för nöjes skull?",
-      "Vad är det första du tänker på när du hör mitt namn?",
-      "Vilket av dina intressen önskar du att jag delade mer?",
-      "Om vi startade ett företag tillsammans — vad skulle det sälja?"
+      {
+        q: "Vilket hormon frigörs vid en kram som varar minst 20 sekunder?",
+        options: ["Adrenalin", "Oxytocin", "Kortisol"],
+        correct: 1
+      },
+      {
+        q: "Forskaren John Gottman kan förutsäga skilsmässa med hög träffsäkerhet. Vad kallar han det mest skadliga beteendet i ett par?",
+        options: ["Förakt", "Tystnad", "Svartsjuka"],
+        correct: 0
+      },
+      {
+        q: "Hur många kärleksspråk identifierade Gary Chapman i sin berömda bok?",
+        options: ["Tre", "Fem", "Sju"],
+        correct: 1
+      },
+      {
+        q: "Vilket land firar Alla hjärtans dag den 14 februari som en tradition som går tillbaka till 1800-talet?",
+        options: ["Frankrike", "Italien", "England"],
+        correct: 2
+      },
+      {
+        q: "Vad kallas fenomenet när två personer som är kära omedvetet speglar varandras rörelser?",
+        options: ["Mimikry", "Synkronisering", "Empati"],
+        correct: 0
+      },
+      {
+        q: "Enligt psykologen Robert Sternberg består fullständig kärlek av tre delar. Vilka?",
+        options: ["Passion, engagemang och tillit", "Intimitet, passion och engagemang", "Kärlek, respekt och lojalitet"],
+        correct: 1
+      },
+      {
+        q: "Vad visar forskning om par som äter middag tillsammans utan telefoner?",
+        options: ["De grälar mer", "De rapporterar högre relation­snöjdhet", "Det gör ingen skillnad"],
+        correct: 1
+      },
+      {
+        q: "Vilken del av hjärnan är mest aktiv när vi ser på en bild av någon vi älskar?",
+        options: ["Amygdala", "Pannloben", "Belöningssystemet (VTA)"],
+        correct: 2
+      },
+      {
+        q: "Hur lång tid tar det i genomsnitt innan man säger 'jag älskar dig' för första gången?",
+        options: ["Tre dagar", "Tre månader", "Tre år"],
+        correct: 1
+      },
+      {
+        q: "Vad kallar psykologer förmågan att förstå sin partners perspektiv utan att döma?",
+        options: ["Sympati", "Empati", "Mentalisering"],
+        correct: 2
+      },
+      {
+        q: "Vilken av dessa aktiviteter stärker enligt forskning par­bandet mest?",
+        options: ["Titta på film tillsammans", "Prova något nytt och spännande ihop", "Diskutera framtidsplaner"],
+        correct: 1
+      },
+      {
+        q: "Vad är 'the 36 questions' som psykologen Arthur Aron tog fram?",
+        options: ["En konflikt­lösningsmetod", "Frågor som skapar närhet och kärlek mellan främlingar", "Ett personlighetstest för par"],
+        correct: 1
+      },
+      {
+        q: "Vilket land har världens lägsta skilsmässofrekvens?",
+        options: ["Sverige", "Indien", "Japan"],
+        correct: 1
+      },
+      {
+        q: "Vad kallas känslan av att sakna sin partner intensivt när de är borta?",
+        options: ["Nostalgi", "Längtan", "Separationsångest"],
+        correct: 1
+      },
+      {
+        q: "Vad visar studier om par som tacklar problem som ett team ('vi mot problemet')?",
+        options: ["De löser problem snabbare men är mer stressade", "De mår bättre och har starkare relation", "Det spelar ingen roll hur man formulerar det"],
+        correct: 1
+      },
+      {
+        q: "Vad heter det kemiska ämnet som kallas 'förälskelsens drog'?",
+        options: ["Serotonin", "Fenyletylamín (PEA)", "Dopamin"],
+        correct: 1
+      },
+      {
+        q: "Hur många positiva interaktioner behövs per negativ interaktion för att ett par ska må bra, enligt Gottman?",
+        options: ["2:1", "5:1", "10:1"],
+        correct: 1
+      },
+      {
+        q: "Vad kallas det när man medvetet väljer att se det bästa i sin partner trots deras brister?",
+        options: ["Positiv illusion", "Blind kärlek", "Kognitiv dissonans"],
+        correct: 0
+      },
+      {
+        q: "Vilket djur är känt för att vara monogamt och bilda par för livet?",
+        options: ["Delfin", "Präriehund", "Albatross"],
+        correct: 2
+      },
+      {
+        q: "Vad kallas teorin om att vi attraheras av personer som liknar oss själva?",
+        options: ["Homofili", "Komplement­aritet", "Attraktion­steorin"],
+        correct: 0
+      },
+      {
+        q: "Vilket av dessa är ett tecken på trygg anknytning i en relation?",
+        options: ["Rädsla för att lämnas ensam", "Förmåga att be om hjälp utan ångest", "Att aldrig behöva tid för sig själv"],
+        correct: 1
+      },
+      {
+        q: "Vad visar forskning om par som skrattar tillsammans?",
+        options: ["Det ökar risken för konflikter", "Det stärker bandet och ökar tillfredställelsen", "Det har ingen effekt på relationen"],
+        correct: 1
+      },
+      {
+        q: "Vilket av dessa begrepp myntade psykologen Harville Hendrix för att beskriva vår omedvetna partnersökning?",
+        options: ["Imago", "Spegelbild", "Anima"],
+        correct: 0
+      },
+      {
+        q: "Vad kallas det när man i en relation börjar ta varandra för givet och slutar uppskatta det lilla?",
+        options: ["Relationsblindhet", "Hedonic adaptation", "Kärlekstrött­het"],
+        correct: 1
+      }
     ];
 
+    // ── HELPERS ───────────────────────────────
     function getDayOfYear() {
       const now = new Date(), start = new Date(now.getFullYear(), 0, 0);
       return Math.floor((now - start) / 86400000);
@@ -411,13 +463,11 @@
       const months = ['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'];
       return `${days[d.getDay()]} · ${d.getDate()} ${months[d.getMonth()]}`;
     }
-    function safeKey(str) {
-      return str.trim().toLowerCase().replace(/[^a-zåäö0-9]+/g, '_');
-    }
+    function safeKey(s) { return s.trim().toLowerCase().replace(/[^a-zåäö0-9]+/g,'_'); }
 
-    let myName   = localStorage.getItem('myName')   || '';
+    let myName = localStorage.getItem('myName') || '';
     let pairCode = localStorage.getItem('pairCode') || '';
-    let dbOff    = null;
+    let dbOff = null;
 
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -429,9 +479,7 @@
         document.getElementById('inputPairCode').value = pairCode;
         document.getElementById('inputMyName').value   = myName;
         showScreen('screenSetup');
-      } else {
-        openQuiz();
-      }
+      } else { openQuiz(); }
     }
 
     function saveSetup() {
@@ -448,83 +496,122 @@
 
     function resetSetup() {
       if (dbOff) { dbOff(); dbOff = null; }
-      localStorage.removeItem('pairCode');
-      localStorage.removeItem('myName');
+      localStorage.removeItem('pairCode'); localStorage.removeItem('myName');
       pairCode = ''; myName = '';
       document.getElementById('inputPairCode').value = '';
       document.getElementById('inputMyName').value   = '';
       showScreen('screenSetup');
     }
 
+    // ── QUIZ ──────────────────────────────────
+    const LETTERS = ['A', 'B', 'C'];
+
     function openQuiz() {
       const day = getDayOfYear();
-      const q   = questions[day % questions.length];
+      const qObj = questions[day % questions.length];
 
-      document.getElementById('pairBadge').textContent        = `♡  ${pairCode}`;
-      document.getElementById('questionText').textContent      = q;
-      document.getElementById('answerInput').value             = '';
-      document.getElementById('answerInputArea').style.display = 'block';
-      document.getElementById('answersArea').style.display     = 'none';
+      document.getElementById('pairBadge').textContent = `♡  ${pairCode}`;
+      document.getElementById('questionText').textContent = qObj.q;
+      document.getElementById('optionsArea').style.display = 'block';
+      document.getElementById('resultsArea').style.display = 'none';
+
+      // Build option buttons
+      const wrap = document.getElementById('optionsWrap');
+      wrap.innerHTML = '';
+      qObj.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.className = 'option-btn';
+        btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span>${opt}`;
+        btn.onclick = () => submitAnswer(i);
+        wrap.appendChild(btn);
+      });
+
       showScreen('screenQuiz');
 
+      // Already answered today?
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
       db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).once('value').then(snap => {
-        if (snap.exists()) showAnswers();
+        if (snap.exists()) showResults();
       });
     }
 
-    function submitAnswer() {
-      const text = document.getElementById('answerInput').value.trim();
-      if (!text) return;
+    function submitAnswer(choiceIndex) {
+      // Disable all buttons immediately
+      document.querySelectorAll('.option-btn').forEach((btn, i) => {
+        btn.disabled = true;
+        if (i === choiceIndex) btn.classList.add('selected');
+      });
+
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
       const day   = getDayOfYear();
+      const qObj  = questions[day % questions.length];
 
-      db.ref(`pairs/${pKey}/days/${today}`).update({ question: questions[day % questions.length], date: today });
-      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({ name: myName, text, ts: Date.now() })
-        .then(() => showAnswers());
+      db.ref(`pairs/${pKey}/days/${today}`).update({ date: today });
+      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({
+        name: myName,
+        choice: choiceIndex,
+        answer: qObj.options[choiceIndex],
+        correct: choiceIndex === qObj.correct,
+        ts: Date.now()
+      }).then(() => showResults());
     }
 
-    function showAnswers() {
-      document.getElementById('answerInputArea').style.display = 'none';
-      document.getElementById('answersArea').style.display     = 'block';
+    function showResults() {
+      document.getElementById('optionsArea').style.display = 'none';
+      document.getElementById('resultsArea').style.display = 'block';
 
       if (dbOff) { dbOff(); dbOff = null; }
 
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
+      const day   = getDayOfYear();
+      const qObj  = questions[day % questions.length];
       const ref   = db.ref(`pairs/${pKey}/days/${today}/answers`);
 
       dbOff = ref.on('value', snap => {
         const data    = snap.val() || {};
-        const wrap    = document.getElementById('answersWrap');
+        const wrap    = document.getElementById('resultsWrap');
         const waiting = document.getElementById('waitingMsg');
+        const reveal  = document.getElementById('correctReveal');
         wrap.innerHTML = '';
 
         const entries = Object.entries(data).sort((a, b) => {
           if (a[0] === nKey) return -1;
           if (b[0] === nKey) return 1;
-          return (a[1].ts || 0) - (b[1].ts || 0);
+          return (a[1].ts||0) - (b[1].ts||0);
         });
 
         entries.forEach(([k, v]) => {
-          const isMe   = k === nKey;
+          const isMe = k === nKey;
           const bubble = document.createElement('div');
-          bubble.className = 'answer-bubble' + (isMe ? ' mine' : '');
-          bubble.innerHTML = `<div class="bubble-name">${v.name}${isMe ? ' · Du' : ''}</div><div class="bubble-text">${v.text}</div>`;
+          bubble.className = 'result-bubble ' + (v.correct ? 'correct' : 'wrong');
+          bubble.innerHTML = `
+            <div class="result-left">
+              <div class="result-name">${v.name}${isMe ? ' · Du' : ''}</div>
+              <div class="result-answer">${LETTERS[v.choice]}. ${v.answer}</div>
+            </div>
+            <div class="result-icon">${v.correct ? '✓' : '✗'}</div>`;
           wrap.appendChild(bubble);
         });
 
-        waiting.innerHTML = entries.length < 2
-          ? 'Väntar på din partners svar<span class="waiting-dots"></span>'
-          : '';
+        const count = entries.length;
+        if (count >= 2) {
+          waiting.innerHTML = '';
+          reveal.style.display = 'block';
+          reveal.innerHTML = `<strong>Rätt svar</strong>${LETTERS[qObj.correct]}. ${qObj.options[qObj.correct]}`;
+        } else {
+          waiting.innerHTML = 'Väntar på din partners svar<span class="waiting-dots"></span>';
+          reveal.style.display = 'none';
+        }
       });
     }
 
+    // ── INIT ──────────────────────────────────
     const todayIdx = getDayOfYear() % tips.length;
     const tip      = tips[todayIdx];
     document.getElementById('dateStrip').textContent   = formatDate();
