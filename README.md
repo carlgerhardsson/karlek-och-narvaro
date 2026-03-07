@@ -1,6 +1,6 @@
 # Kärlek & Närvaro 💛
 
-En iPhone-anpassad webbapp för par som vill hålla relationen levande med dagliga tips och ett gemensamt quiz.
+En iPhone-anpassad webbapp för par som vill hålla relationen levande med dagliga tips och ett gemensamt foto-quiz.
 
 **Live:** https://carlgerhardsson.github.io/karlek-och-narvaro/
 
@@ -12,20 +12,21 @@ En iPhone-anpassad webbapp för par som vill hålla relationen levande med dagli
 - Visar ett inspirerande tips per dag om hur man är en bra partner
 - 22 tips roterar automatiskt baserat på datum (en ny varje dag)
 - Visar dagens datum, kategori och tipsnummer
-- Knapp längst ner: **♡ Dagens fråga** → leder till quizet
+- Knapp längst ner: **♡ Dagens fråga** → leder till foto-quizet
 
 ### Skärm 2 — Parkoppling (första gången)
 - Båda partners anger ett **gemensamt parnamn** (t.ex. `CarlOchAnna`) och sitt **eget namn**
 - Sparas i `localStorage` så de slipper fylla i det igen
 - Det gemensamma namnet används som nyckel i Firebase för att synka svaren
 
-### Skärm 3 — Dagligt quiz
-- En ny fråga varje dag (24 frågor om kärlek, psykologi och relationer)
-- **Tre svarsalternativ (A, B, C)** — ett är rätt
-- Man väljer sitt svar → det låses direkt
+### Skärm 3 — Dagligt foto-quiz
+- Hämtar en bild per dag från `photos/`-mappen i Firebase Storage
+- Bilden väljs baserat på dag på året (roterar automatiskt)
+- Läser EXIF GPS-koordinater ur bildfilen via **exifr.js**
+- **Om GPS finns:** reverse geocoding via Nominatim (OpenStreetMap) → tre svarsalternativ (rätt stad + två automatiskt genererade distraktorer inom ~150–350 km)
+- **Om GPS saknas:** fritextruta där båda gissar platsen
 - Firebase synkar svaren i realtid
-- När **båda svarat** visas varandras svar med ✓/✗ i grönt/rött
-- Det rätta svaret avslöjas längst ner
+- När **båda svarat** visas varandras svar och rätt plats avslöjas
 
 ---
 
@@ -35,65 +36,70 @@ En iPhone-anpassad webbapp för par som vill hålla relationen levande med dagli
 |-----|--------|
 | Hosting | GitHub Pages (`carlgerhardsson/karlek-och-narvaro`) |
 | Frontend | Vanilla HTML/CSS/JS — en enda fil (`index.html`) |
-| Realtidssynk | Firebase Realtime Database (Spark-plan, gratis) |
+| Bildlagring | Firebase Storage (Blaze-plan) — mappen `photos/` |
+| Realtidssynk | Firebase Realtime Database |
+| EXIF-läsning | exifr.js v7 (CDN) |
+| Geocoding | Nominatim / OpenStreetMap (gratis, ingen API-nyckel) |
 | Typsnitt | Cormorant Garamond + Josefin Sans (Google Fonts) |
 
-### Firebase-struktur
+---
+
+## Firebase-setup
+
+### Storage-regler
+```
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /photos/{fileName} {
+      allow read: if true;
+    }
+  }
+}
+```
+
+### CORS (körs en gång via Google Cloud Shell)
+```bash
+echo '[{"origin":["https://carlgerhardsson.github.io"],"method":["GET"],"maxAgeSeconds":3600}]' > cors.json
+gsutil cors set cors.json gs://karlek-narvaro.firebasestorage.app
+```
+
+### Firebase Realtime Database-struktur
 ```
 pairs/
   {parnamn}/
     days/
       {YYYY-MM-DD}/
         date: "2026-03-07"
+        type: "photo"
+        filename: "roma-2023.jpg"
         answers/
           {personnamn}/
             name: "Carl"
-            choice: 1          (index 0-2)
-            answer: "Oxytocin"
-            correct: true
+            answer: "Rom"         (valt alternativ eller fritext)
+            correct: true         (null om fritext)
+            type: "choice"        (eller "freetext")
             ts: 1741342800000
 ```
 
-### Designbeslut
+---
+
+## Hur man lägger till fler bilder
+
+1. Gå till [Firebase Console](https://console.firebase.google.com) → **Storage**
+2. Öppna mappen `photos/`
+3. Ladda upp nya bilder (JPG/HEIC med GPS-data ger bäst upplevelse)
+4. Klart — appen väljer automatiskt en ny bild per dag baserat på antalet bilder
+
+---
+
+## Designbeslut
 - Varm, organisk färgpalett: cream/warm/rose/gold
 - Glassmorfism-kort med backdrop-filter
 - Hjärtslag-animation på ♡-ikonen
 - Animerade inladdningar med fadeIn + translateY
 - iPhone-optimerad: `viewport-fit=cover`, `apple-mobile-web-app-capable`
-
----
-
-## Nästa steg — Google Photos-integration
-
-### Idé
-Ersätt de generiska quizfrågorna med bilder från ett privat Google Photos-album (t.ex. "Kärlek & Närvaro"). Frågan blir: **"Var togs den här bilden?"**
-
-### Flöde
-1. Användaren loggar in med Google (OAuth 2.0)
-2. Appen hämtar en bild per dag från albumet via **Google Photos API**
-3. **Om bilden har GPS-metadata:** generera tre ortnamn automatiskt (rätt + två nära/liknande platser)
-4. **Om bilden saknar GPS-metadata:** fritext-svar där båda gissar platsen
-
-### OAuth-setup som krävs
-- Google Cloud Console → nytt projekt → aktivera **Google Photos Library API**
-- Skapa OAuth 2.0-klienter (Web application)
-- Lägg till `https://carlgerhardsson.github.io` som auktoriserad JavaScript-ursprung
-- Scope: `https://www.googleapis.com/auth/photoslibrary.readonly`
-
-### Utmaningar att lösa
-- Google Photos API returnerar inte GPS direkt — koordinater finns i EXIF men måste extraheras via **Nominatim (OpenStreetMap)** för reverse geocoding
-- OAuth-token måste hanteras i sessionStorage (inte localStorage) av säkerhetsskäl
-- Bilderna serveras via Googles CDN med tidsbegränsade URL:er — behöver hanteras vid Firebase-synk
-- Alternativgenerering: om GPS finns → hitta 2 platser inom ~50-200 km som distraktorer
-
-### Filstruktur framöver (förslag)
-```
-index.html          — huvudfil (hem + setup + quiz)
-photos.js           — Google Photos API + OAuth-logik
-geocode.js          — reverse geocoding + alternativgenerering
-firebase.js         — Firebase-konfiguration och helpers
-README.md           — denna fil
-```
+- Laddningsindikator med spinner och statustext medan GPS och geocoding körs
 
 ---
 
@@ -102,7 +108,6 @@ README.md           — denna fil
 1. Gör ändringar i `index.html` (via Claude eller manuellt)
 2. Commita till `main`-branchen på GitHub
 3. GitHub Pages uppdateras automatiskt inom ~1 minut
-4. Appen uppdateras nästa gång användaren öppnar den i Safari
 
 ## Hur man lägger till hemskärmsikon (iPhone)
 1. Öppna länken i **Safari**
