@@ -144,9 +144,7 @@
       border: 1px solid rgba(196,133,90,0.2); border-radius: 24px; overflow: hidden;
       box-shadow: 0 4px 30px rgba(107,63,34,0.07); animation: fadeIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .photo-img {
-      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
-    }
+    .photo-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; }
     .photo-body { padding: 24px 24px 20px; }
     .photo-label {
       font-size: 11px; font-weight: 300; letter-spacing: 0.3em; text-transform: uppercase;
@@ -223,8 +221,7 @@
 
     /* ── LOADING ── */
     .loading-wrap {
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-      padding: 40px 0;
+      display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 40px 0;
     }
     .loading-spinner {
       width: 32px; height: 32px; border-radius: 50%;
@@ -322,17 +319,13 @@
     <div class="reset-link" onclick="resetSetup()">Byt parkod / namn</div>
   </div>
 
-  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-  <!-- exifr: läser EXIF/GPS ur bildfilen -->
   <script src="https://cdn.jsdelivr.net/npm/exifr@7/dist/full.umd.cjs"></script>
-  <!-- heic2any: konverterar HEIC → JPEG i webbläsaren (behövs för Android/Chrome) -->
   <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 
   <script>
-    // ── FIREBASE ──────────────────────────────────────────
     const firebaseConfig = {
       apiKey:            "AIzaSyA6qXrBJLPhFIflfeGUr6KBaomjx45_78Y",
       authDomain:        "karlek-narvaro.firebaseapp.com",
@@ -347,7 +340,6 @@
     const db      = firebase.database();
     const storage = firebase.storage();
 
-    // ── TIPS ──────────────────────────────────────────────
     const tips = [
       { category: "Närvaro",        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.", desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns." },
       { category: "Uppskattning",   text: "Berätta för din partner något specifikt du beundrar hos dem idag.", desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge." },
@@ -373,7 +365,6 @@
       { category: "Reflektion",     text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?", desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?" }
     ];
 
-    // ── HELPERS ───────────────────────────────────────────
     function getDayOfYear() {
       const now = new Date(), start = new Date(now.getFullYear(), 0, 0);
       return Math.floor((now - start) / 86400000);
@@ -396,29 +387,30 @@
       }
       return arr;
     }
-
-    // Kontrollera om webbläsaren kan visa HEIC nativt (Safari/iOS kan, Chrome/Android kan inte)
-    function isHeicFile(filename) {
-      return /\.(heic|heif)$/i.test(filename);
-    }
+    function isHeicFile(filename) { return /\.(heic|heif)$/i.test(filename); }
     async function browserSupportsHeic() {
       try {
         const img = new Image();
-        // Liten HEIC-testbild (1x1 pixel, base64)
         img.src = 'data:image/heic;base64,AAAAHGZ0eXBoZWljAAAAAG1pZjFoZWljAAAA';
-        await new Promise((res) => { img.onload = img.onerror = res; });
+        await new Promise(res => { img.onload = img.onerror = res; });
         return img.naturalWidth > 0;
       } catch { return false; }
     }
 
-    // ── STATE ─────────────────────────────────────────────
+    // ── Foto-svar sparas under /photo/answers/ för att inte krocka med gamla quiz-svar
+    function photoAnswersRef(pKey, today) {
+      return db.ref(`pairs/${pKey}/days/${today}/photo/answers`);
+    }
+    function myPhotoAnswerRef(pKey, today, nKey) {
+      return db.ref(`pairs/${pKey}/days/${today}/photo/answers/${nKey}`);
+    }
+
     let myName   = localStorage.getItem('myName')   || '';
     let pairCode = localStorage.getItem('pairCode') || '';
     let dbOff    = null;
     let todayPhotoMeta = null;
-    let heicSupported  = null; // cachas efter första kollen
+    let heicSupported  = null;
 
-    // ── NAVIGATION ────────────────────────────────────────
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -450,7 +442,6 @@
       showScreen('screenSetup');
     }
 
-    // ── GEOCODING ─────────────────────────────────────────
     async function reverseGeocode(lat, lng) {
       try {
         const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10`, { headers: { 'Accept-Language': 'sv' } });
@@ -475,7 +466,6 @@
       return shuffle([{ label: correctName, correct: true }, ...wrongs.slice(0,2).map(w => ({ label: w, correct: false }))]);
     }
 
-    // ── FOTO FRÅN STORAGE ─────────────────────────────────
     async function loadTodayPhoto() {
       setLoading('Hämtar dagens bild');
       try {
@@ -485,23 +475,19 @@
           showError("Inga bilder hittades. Lägg till bilder i mappen 'photos' i Firebase Storage.");
           return;
         }
-
         const idx = getDayOfYear() % items.length;
         const ref = items[idx];
         setLoading('Laddar bild');
         const url = await ref.getDownloadURL();
 
-        // Hämta bilden som blob (behövs för EXIF + eventuell HEIC-konvertering)
         setLoading('Läser bild');
         const response = await fetch(url);
         let blob = await response.blob();
 
-        // Läs EXIF/GPS från ursprunglig blob (innan eventuell konvertering)
         setLoading('Läser platsdata');
         let gps = null;
         try { gps = await exifr.gps(blob); } catch(e) { console.log('EXIF:', e); }
 
-        // HEIC-konvertering för Android/Chrome
         let displayUrl = url;
         if (isHeicFile(ref.name)) {
           if (heicSupported === null) heicSupported = await browserSupportsHeic();
@@ -510,16 +496,12 @@
             try {
               const jpegBlob = await heic2any({ blob, toType: 'image/jpeg', quality: 0.85 });
               displayUrl = URL.createObjectURL(jpegBlob);
-            } catch(e) {
-              console.log('HEIC-konvertering misslyckades:', e);
-              // Fortsätt med original-URL — kan visa fel på Android men försök ändå
-            }
+            } catch(e) { console.log('HEIC-konvertering misslyckades:', e); }
           }
         }
 
         document.getElementById('photoImg').src = displayUrl;
 
-        // Bygg quiz-metadata
         if (gps && gps.latitude && gps.longitude) {
           setLoading('Söker upp platsen');
           const correctName = await reverseGeocode(gps.latitude, gps.longitude);
@@ -584,16 +566,14 @@
         document.getElementById('resultsArea').style.display  = 'none';
       }
 
+      // Kolla om vi redan svarat idag — använd /photo/answers/ sökvägen
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
-      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).once('value').then(snap => {
+      myPhotoAnswerRef(pKey, today, nKey).once('value').then(snap => {
         if (snap.exists()) showResults();
       });
     }
-
-    // ── SVAR ──────────────────────────────────────────────
-    const LETTERS = ['A','B','C'];
 
     function submitChoice(idx, isCorrect, label) {
       document.querySelectorAll('.option-btn').forEach((btn, i) => {
@@ -603,8 +583,8 @@
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
-      db.ref(`pairs/${pKey}/days/${today}`).update({ date: today, type: 'photo', filename: todayPhotoMeta.filename });
-      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({
+      db.ref(`pairs/${pKey}/days/${today}/photo`).update({ date: today, filename: todayPhotoMeta.filename });
+      myPhotoAnswerRef(pKey, today, nKey).set({
         name: myName, answer: label, correct: isCorrect, type: 'choice', ts: Date.now()
       }).then(() => showResults());
     }
@@ -617,8 +597,8 @@
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
-      db.ref(`pairs/${pKey}/days/${today}`).update({ date: today, type: 'photo', filename: todayPhotoMeta.filename });
-      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({
+      db.ref(`pairs/${pKey}/days/${today}/photo`).update({ date: today, filename: todayPhotoMeta.filename });
+      myPhotoAnswerRef(pKey, today, nKey).set({
         name: myName, answer: text, correct: null, type: 'freetext', ts: Date.now()
       }).then(() => showResults());
     }
@@ -633,20 +613,22 @@
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
-      const ref   = db.ref(`pairs/${pKey}/days/${today}/answers`);
 
-      dbOff = ref.on('value', snap => {
+      dbOff = photoAnswersRef(pKey, today).on('value', snap => {
         const data    = snap.val() || {};
         const wrap    = document.getElementById('resultsWrap');
         const waiting = document.getElementById('waitingMsg');
         const reveal  = document.getElementById('correctReveal');
         wrap.innerHTML = '';
 
-        const entries = Object.entries(data).sort((a, b) => {
-          if (a[0] === nKey) return -1;
-          if (b[0] === nKey) return 1;
-          return (a[1].ts||0) - (b[1].ts||0);
-        });
+        // Filtrera bort eventuella gamla svar som saknar 'type'-fältet
+        const entries = Object.entries(data)
+          .filter(([, v]) => v.type === 'choice' || v.type === 'freetext')
+          .sort((a, b) => {
+            if (a[0] === nKey) return -1;
+            if (b[0] === nKey) return 1;
+            return (a[1].ts||0) - (b[1].ts||0);
+          });
 
         entries.forEach(([k, v]) => {
           const isMe   = k === nKey;
@@ -665,8 +647,8 @@
 
         if (entries.length >= 2) {
           waiting.innerHTML = '';
-          const meta = todayPhotoMeta;
           reveal.style.display = 'block';
+          const meta = todayPhotoMeta;
           if (meta && meta.isGPS && meta.correctName) {
             reveal.innerHTML = `<strong>Rätt svar</strong>${meta.correctName}`;
           } else {
@@ -679,7 +661,6 @@
       });
     }
 
-    // ── ÖPPNA QUIZ ────────────────────────────────────────
     function openQuiz() {
       document.getElementById('pairBadge').textContent      = `♡  ${pairCode}`;
       document.getElementById('loadingArea').style.display  = 'flex';
@@ -689,7 +670,6 @@
       loadTodayPhoto();
     }
 
-    // ── INIT ──────────────────────────────────────────────
     const todayIdx = getDayOfYear() % tips.length;
     const tip      = tips[todayIdx];
     document.getElementById('dateStrip').textContent   = formatDate();
