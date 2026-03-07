@@ -37,6 +37,7 @@
     }
     .screen.active { display: flex; }
 
+    /* ── HEADER ── */
     .header { text-align: center; margin-bottom: 32px; }
     .header-icon { font-size: 28px; margin-bottom: 10px; display: block; animation: heartbeat 3s ease-in-out infinite; }
     @keyframes heartbeat {
@@ -132,19 +133,29 @@
     .field-input::placeholder { color: rgba(107,63,34,0.3); }
     .error-msg { font-size: 12px; color: var(--rose); text-align: center; margin-top: 6px; letter-spacing: 0.05em; }
 
-    /* ── QUIZ ── */
+    /* ── FOTO-QUIZ ── */
     .pair-badge {
       font-size: 11px; font-weight: 200; letter-spacing: 0.2em; text-transform: uppercase;
       color: var(--gold); margin-bottom: 20px; text-align: center;
     }
-    .question-label {
-      font-size: 11px; font-weight: 300; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--rose); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    .photo-card {
+      width: 100%; background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(196,133,90,0.2); border-radius: 24px; overflow: hidden;
+      box-shadow: 0 4px 30px rgba(107,63,34,0.07); animation: fadeIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
     }
-    .question-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--rose); opacity: 0.6; }
-    .question-text {
-      font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300;
-      font-style: italic; line-height: 1.5; color: var(--deep); margin-bottom: 22px;
+    .photo-img {
+      width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block;
+    }
+    .photo-body { padding: 24px 24px 20px; }
+    .photo-label {
+      font-size: 11px; font-weight: 300; letter-spacing: 0.3em; text-transform: uppercase;
+      color: var(--rose); margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+    }
+    .photo-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--rose); opacity: 0.6; }
+    .photo-question {
+      font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300;
+      font-style: italic; line-height: 1.5; color: var(--deep); margin-bottom: 20px;
     }
 
     /* ── OPTIONS ── */
@@ -165,28 +176,33 @@
     .option-letter {
       width: 22px; height: 22px; border-radius: 50%; border: 1px solid currentColor;
       display: flex; align-items: center; justify-content: center;
-      font-size: 10px; font-weight: 300; letter-spacing: 0.05em; flex-shrink: 0;
+      font-size: 10px; font-weight: 300; flex-shrink: 0;
     }
 
-    /* ── RESULTS ── */
-    .results-wrap { width: 100%; display: flex; flex-direction: column; gap: 10px; margin-top: 4px; }
+    /* ── FRITEXT ── */
+    .freetext-input {
+      width: 100%; background: rgba(255,255,255,0.7); border: 1px solid rgba(196,133,90,0.25);
+      border-radius: 14px; padding: 14px 18px;
+      font-family: 'Josefin Sans', sans-serif; font-size: 15px; font-weight: 300;
+      color: var(--deep); outline: none; margin-bottom: 12px; transition: border-color 0.2s;
+    }
+    .freetext-input:focus { border-color: var(--warm); }
+    .freetext-input::placeholder { color: rgba(107,63,34,0.3); }
+
+    /* ── RESULTAT ── */
+    .results-wrap { width: 100%; display: flex; flex-direction: column; gap: 10px; }
     .result-bubble {
       background: rgba(255,255,255,0.65); border: 1px solid rgba(196,133,90,0.18);
       border-radius: 16px; padding: 14px 18px;
       animation: fadeIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
-    .result-bubble.correct { border-color: var(--green); }
-    .result-bubble.wrong   { border-color: var(--red); }
+    .result-bubble.correct-ans { border-color: var(--green); }
+    .result-bubble.wrong-ans   { border-color: var(--red); }
+    .result-bubble.freetext-ans { border-color: rgba(196,133,90,0.4); }
     .result-left { display: flex; flex-direction: column; gap: 4px; }
-    .result-name {
-      font-size: 9px; font-weight: 300; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--gold);
-    }
-    .result-answer {
-      font-family: 'Cormorant Garamond', serif; font-size: 16px;
-      font-weight: 300; font-style: italic; color: var(--deep); line-height: 1.4;
-    }
+    .result-name { font-size: 9px; font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); }
+    .result-answer { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 300; font-style: italic; color: var(--deep); line-height: 1.4; }
     .result-icon { font-size: 18px; flex-shrink: 0; }
 
     .correct-reveal {
@@ -199,13 +215,25 @@
       display: block; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
       margin-bottom: 4px; font-weight: 300;
     }
-
     .waiting-msg {
       font-size: 12px; font-weight: 200; letter-spacing: 0.08em; color: var(--mid); opacity: 0.6;
       text-align: center; margin-top: 16px; line-height: 1.6;
     }
     .waiting-dots::after { content: ''; animation: dots 1.5s steps(3, end) infinite; }
     @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+
+    /* ── LOADING ── */
+    .loading-wrap {
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+      padding: 40px 0; color: var(--mid);
+    }
+    .loading-spinner {
+      width: 32px; height: 32px; border-radius: 50%;
+      border: 2px solid rgba(196,133,90,0.15); border-top-color: var(--warm);
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text { font-size: 11px; font-weight: 200; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gold); }
 
     .reset-link {
       margin-top: 20px; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
@@ -252,7 +280,7 @@
     <button class="primary-btn" onclick="saveSetup()">Fortsätt →</button>
   </div>
 
-  <!-- ══ QUIZ ══ -->
+  <!-- ══ FOTO-QUIZ ══ -->
   <div class="screen" id="screenQuiz">
     <div class="header">
       <span class="header-icon">♡</span>
@@ -261,29 +289,58 @@
     <span class="back-link" onclick="showScreen('screenHome')">← Tillbaka</span>
     <div class="pair-badge" id="pairBadge"></div>
 
-    <div class="card">
-      <div class="question-label">Dagens fråga</div>
-      <div class="question-text" id="questionText"></div>
+    <!-- Laddar -->
+    <div id="loadingArea" class="loading-wrap">
+      <div class="loading-spinner"></div>
+      <div class="loading-text" id="loadingText">Laddar dagens bild</div>
+    </div>
 
-      <!-- Svarsalternativ -->
-      <div id="optionsArea">
-        <div class="options-wrap" id="optionsWrap"></div>
-      </div>
+    <!-- Foto + fråga -->
+    <div id="photoArea" style="display:none; width:100%">
+      <div class="photo-card">
+        <img class="photo-img" id="photoImg" src="" alt="Dagens bild">
+        <div class="photo-body">
+          <div class="photo-label">Var är vi?</div>
+          <div class="photo-question">Var togs den här bilden?</div>
 
-      <!-- Resultat efter svar -->
-      <div id="resultsArea" style="display:none">
-        <div class="results-wrap" id="resultsWrap"></div>
-        <div id="correctReveal" class="correct-reveal" style="display:none"></div>
-        <div class="waiting-msg" id="waitingMsg"></div>
+          <!-- Alternativ (om GPS finns) -->
+          <div id="optionsArea">
+            <div class="options-wrap" id="optionsWrap"></div>
+          </div>
+
+          <!-- Fritext (om GPS saknas) -->
+          <div id="freetextArea" style="display:none">
+            <input class="freetext-input" id="freetextInput" type="text" placeholder="Skriv din gissning…" autocomplete="off" autocorrect="off">
+            <button class="primary-btn" onclick="submitFreetext()">Skicka svar</button>
+          </div>
+
+          <!-- Resultat -->
+          <div id="resultsArea" style="display:none">
+            <div class="results-wrap" id="resultsWrap"></div>
+            <div id="correctReveal" class="correct-reveal" style="display:none"></div>
+            <div class="waiting-msg" id="waitingMsg"></div>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <!-- Fel -->
+    <div id="errorArea" style="display:none; text-align:center; padding: 20px 0;">
+      <div style="font-size:13px; font-weight:200; letter-spacing:0.05em; color:var(--mid); line-height:1.7;" id="errorText"></div>
     </div>
 
     <div class="reset-link" onclick="resetSetup()">Byt parkod / namn</div>
   </div>
 
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+  <!-- exifr: läser EXIF/GPS från bilder -->
+  <script src="https://cdn.jsdelivr.net/npm/exifr@7/dist/full.umd.cjs"></script>
+
   <script>
+    // ══ FIREBASE ════════════════════════════════
     const firebaseConfig = {
       apiKey:            "AIzaSyA6qXrBJLPhFIflfeGUr6KBaomjx45_78Y",
       authDomain:        "karlek-narvaro.firebaseapp.com",
@@ -295,9 +352,10 @@
       measurementId:     "G-Q0ZN7HRR8D"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    const db      = firebase.database();
+    const storage = firebase.storage();
 
-    // ── TIPS ──────────────────────────────────
+    // ══ TIPS ════════════════════════════════════
     const tips = [
       { category: "Närvaro",        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.", desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns." },
       { category: "Uppskattning",   text: "Berätta för din partner något specifikt du beundrar hos dem idag.", desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge." },
@@ -323,132 +381,7 @@
       { category: "Reflektion",     text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?", desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?" }
     ];
 
-    // ── QUIZ-FRÅGOR med tre alternativ ────────
-    // correct = index för rätt svar (0, 1 eller 2)
-    const questions = [
-      {
-        q: "Vilket hormon frigörs vid en kram som varar minst 20 sekunder?",
-        options: ["Adrenalin", "Oxytocin", "Kortisol"],
-        correct: 1
-      },
-      {
-        q: "Forskaren John Gottman kan förutsäga skilsmässa med hög träffsäkerhet. Vad kallar han det mest skadliga beteendet i ett par?",
-        options: ["Förakt", "Tystnad", "Svartsjuka"],
-        correct: 0
-      },
-      {
-        q: "Hur många kärleksspråk identifierade Gary Chapman i sin berömda bok?",
-        options: ["Tre", "Fem", "Sju"],
-        correct: 1
-      },
-      {
-        q: "Vilket land firar Alla hjärtans dag den 14 februari som en tradition som går tillbaka till 1800-talet?",
-        options: ["Frankrike", "Italien", "England"],
-        correct: 2
-      },
-      {
-        q: "Vad kallas fenomenet när två personer som är kära omedvetet speglar varandras rörelser?",
-        options: ["Mimikry", "Synkronisering", "Empati"],
-        correct: 0
-      },
-      {
-        q: "Enligt psykologen Robert Sternberg består fullständig kärlek av tre delar. Vilka?",
-        options: ["Passion, engagemang och tillit", "Intimitet, passion och engagemang", "Kärlek, respekt och lojalitet"],
-        correct: 1
-      },
-      {
-        q: "Vad visar forskning om par som äter middag tillsammans utan telefoner?",
-        options: ["De grälar mer", "De rapporterar högre relation­snöjdhet", "Det gör ingen skillnad"],
-        correct: 1
-      },
-      {
-        q: "Vilken del av hjärnan är mest aktiv när vi ser på en bild av någon vi älskar?",
-        options: ["Amygdala", "Pannloben", "Belöningssystemet (VTA)"],
-        correct: 2
-      },
-      {
-        q: "Hur lång tid tar det i genomsnitt innan man säger 'jag älskar dig' för första gången?",
-        options: ["Tre dagar", "Tre månader", "Tre år"],
-        correct: 1
-      },
-      {
-        q: "Vad kallar psykologer förmågan att förstå sin partners perspektiv utan att döma?",
-        options: ["Sympati", "Empati", "Mentalisering"],
-        correct: 2
-      },
-      {
-        q: "Vilken av dessa aktiviteter stärker enligt forskning par­bandet mest?",
-        options: ["Titta på film tillsammans", "Prova något nytt och spännande ihop", "Diskutera framtidsplaner"],
-        correct: 1
-      },
-      {
-        q: "Vad är 'the 36 questions' som psykologen Arthur Aron tog fram?",
-        options: ["En konflikt­lösningsmetod", "Frågor som skapar närhet och kärlek mellan främlingar", "Ett personlighetstest för par"],
-        correct: 1
-      },
-      {
-        q: "Vilket land har världens lägsta skilsmässofrekvens?",
-        options: ["Sverige", "Indien", "Japan"],
-        correct: 1
-      },
-      {
-        q: "Vad kallas känslan av att sakna sin partner intensivt när de är borta?",
-        options: ["Nostalgi", "Längtan", "Separationsångest"],
-        correct: 1
-      },
-      {
-        q: "Vad visar studier om par som tacklar problem som ett team ('vi mot problemet')?",
-        options: ["De löser problem snabbare men är mer stressade", "De mår bättre och har starkare relation", "Det spelar ingen roll hur man formulerar det"],
-        correct: 1
-      },
-      {
-        q: "Vad heter det kemiska ämnet som kallas 'förälskelsens drog'?",
-        options: ["Serotonin", "Fenyletylamín (PEA)", "Dopamin"],
-        correct: 1
-      },
-      {
-        q: "Hur många positiva interaktioner behövs per negativ interaktion för att ett par ska må bra, enligt Gottman?",
-        options: ["2:1", "5:1", "10:1"],
-        correct: 1
-      },
-      {
-        q: "Vad kallas det när man medvetet väljer att se det bästa i sin partner trots deras brister?",
-        options: ["Positiv illusion", "Blind kärlek", "Kognitiv dissonans"],
-        correct: 0
-      },
-      {
-        q: "Vilket djur är känt för att vara monogamt och bilda par för livet?",
-        options: ["Delfin", "Präriehund", "Albatross"],
-        correct: 2
-      },
-      {
-        q: "Vad kallas teorin om att vi attraheras av personer som liknar oss själva?",
-        options: ["Homofili", "Komplement­aritet", "Attraktion­steorin"],
-        correct: 0
-      },
-      {
-        q: "Vilket av dessa är ett tecken på trygg anknytning i en relation?",
-        options: ["Rädsla för att lämnas ensam", "Förmåga att be om hjälp utan ångest", "Att aldrig behöva tid för sig själv"],
-        correct: 1
-      },
-      {
-        q: "Vad visar forskning om par som skrattar tillsammans?",
-        options: ["Det ökar risken för konflikter", "Det stärker bandet och ökar tillfredställelsen", "Det har ingen effekt på relationen"],
-        correct: 1
-      },
-      {
-        q: "Vilket av dessa begrepp myntade psykologen Harville Hendrix för att beskriva vår omedvetna partnersökning?",
-        options: ["Imago", "Spegelbild", "Anima"],
-        correct: 0
-      },
-      {
-        q: "Vad kallas det när man i en relation börjar ta varandra för givet och slutar uppskatta det lilla?",
-        options: ["Relationsblindhet", "Hedonic adaptation", "Kärlekstrött­het"],
-        correct: 1
-      }
-    ];
-
-    // ── HELPERS ───────────────────────────────
+    // ══ HELPERS ═════════════════════════════════
     function getDayOfYear() {
       const now = new Date(), start = new Date(now.getFullYear(), 0, 0);
       return Math.floor((now - start) / 86400000);
@@ -463,25 +396,35 @@
       const months = ['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'];
       return `${days[d.getDay()]} · ${d.getDate()} ${months[d.getMonth()]}`;
     }
-    function safeKey(s) { return s.trim().toLowerCase().replace(/[^a-zåäö0-9]+/g,'_'); }
+    function safeKey(s) { return s.trim().toLowerCase().replace(/[^a-zåäö0-9]+/g, '_'); }
+    function shuffle(arr) {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
 
-    let myName = localStorage.getItem('myName') || '';
+    // ══ STATE ════════════════════════════════════
+    let myName   = localStorage.getItem('myName')   || '';
     let pairCode = localStorage.getItem('pairCode') || '';
-    let dbOff = null;
+    let dbOff    = null;
+    let todayPhotoMeta = null; // { url, correctName, options, isGPS }
 
+    // ══ NAVIGATION ═══════════════════════════════
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
     }
-
     function goToQuiz() {
       if (!myName || !pairCode) {
         document.getElementById('inputPairCode').value = pairCode;
         document.getElementById('inputMyName').value   = myName;
         showScreen('screenSetup');
-      } else { openQuiz(); }
+      } else {
+        openQuiz();
+      }
     }
-
     function saveSetup() {
       const code = document.getElementById('inputPairCode').value.trim();
       const name = document.getElementById('inputMyName').value.trim();
@@ -490,10 +433,9 @@
       err.textContent = '';
       pairCode = code; myName = name;
       localStorage.setItem('pairCode', pairCode);
-      localStorage.setItem('myName',   myName);
+      localStorage.setItem('myName', myName);
       openQuiz();
     }
-
     function resetSetup() {
       if (dbOff) { dbOff(); dbOff = null; }
       localStorage.removeItem('pairCode'); localStorage.removeItem('myName');
@@ -503,32 +445,144 @@
       showScreen('screenSetup');
     }
 
-    // ── QUIZ ──────────────────────────────────
-    const LETTERS = ['A', 'B', 'C'];
+    // ══ GEOCODING ════════════════════════════════
+    async function reverseGeocode(lat, lng) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10&accept-language=sv`;
+        const res = await fetch(url, { headers: { 'Accept-Language': 'sv' } });
+        const data = await res.json();
+        const addr = data.address || {};
+        // Prioritera stad > stad_distrikt > by > municipality > county
+        return addr.city || addr.town || addr.village || addr.municipality || addr.county || addr.country || null;
+      } catch { return null; }
+    }
 
-    function openQuiz() {
-      const day = getDayOfYear();
-      const qObj = questions[day % questions.length];
+    async function buildOptions(lat, lng, correctName) {
+      // Generera 2 felaktiga alternativ via offset-koordinater (~150–350 km bort)
+      const offsets = [
+        [2.8,  1.6],
+        [-2.1, 3.2],
+        [1.5, -3.0],
+        [-3.5, -1.8]
+      ];
+      shuffle(offsets);
+      const wrongs = [];
+      for (const [dlat, dlng] of offsets) {
+        if (wrongs.length >= 2) break;
+        const name = await reverseGeocode(lat + dlat, lng + dlng);
+        if (name && name !== correctName && !wrongs.includes(name)) {
+          wrongs.push(name);
+        }
+      }
+      // Fyll på med generiska om geocoding misslyckas
+      const fallbacks = ['Stockholm', 'Göteborg', 'Malmö', 'Oslo', 'Köpenhamn', 'Berlin', 'Paris', 'Barcelona'];
+      for (const f of fallbacks) {
+        if (wrongs.length >= 2) break;
+        if (f !== correctName && !wrongs.includes(f)) wrongs.push(f);
+      }
+      // Blanda rätt + fel
+      const all = [{ label: correctName, correct: true }, ...wrongs.slice(0,2).map(w => ({ label: w, correct: false }))];
+      return shuffle(all);
+    }
 
-      document.getElementById('pairBadge').textContent = `♡  ${pairCode}`;
-      document.getElementById('questionText').textContent = qObj.q;
-      document.getElementById('optionsArea').style.display = 'block';
-      document.getElementById('resultsArea').style.display = 'none';
+    // ══ FOTO FRÅN STORAGE ════════════════════════
+    async function loadTodayPhoto() {
+      setLoading('Hämtar dagens bild');
+      try {
+        // Lista alla filer i photos/
+        const listResult = await storage.ref('photos').listAll();
+        const items = listResult.items;
+        if (items.length === 0) {
+          showError('Inga bilder hittades i Storage. Lägg till bilder i mappen \'photos\' i Firebase Storage.');
+          return;
+        }
+        // Välj dagens bild baserat på dag på året
+        const idx = getDayOfYear() % items.length;
+        const ref = items[idx];
 
-      // Build option buttons
-      const wrap = document.getElementById('optionsWrap');
-      wrap.innerHTML = '';
-      qObj.options.forEach((opt, i) => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span>${opt}`;
-        btn.onclick = () => submitAnswer(i);
-        wrap.appendChild(btn);
-      });
+        setLoading('Laddar bild');
+        const url = await ref.getDownloadURL();
 
-      showScreen('screenQuiz');
+        // Visa bilden direkt
+        document.getElementById('photoImg').src = url;
 
-      // Already answered today?
+        setLoading('Läser platsdata');
+        let gps = null;
+        try {
+          gps = await exifr.gps(url);
+        } catch (e) {
+          console.log('EXIF-läsning misslyckades:', e);
+        }
+
+        if (gps && gps.latitude && gps.longitude) {
+          setLoading('Söker upp platsen');
+          const correctName = await reverseGeocode(gps.latitude, gps.longitude);
+          if (correctName) {
+            setLoading('Skapar alternativ');
+            const options = await buildOptions(gps.latitude, gps.longitude, correctName);
+            todayPhotoMeta = { url, correctName, options, isGPS: true, filename: ref.name };
+          } else {
+            todayPhotoMeta = { url, correctName: null, options: null, isGPS: false, filename: ref.name };
+          }
+        } else {
+          todayPhotoMeta = { url, correctName: null, options: null, isGPS: false, filename: ref.name };
+        }
+
+        showPhotoQuiz();
+      } catch (err) {
+        console.error(err);
+        if (err.code === 'storage/unauthorized') {
+          showError('Kunde inte läsa bilderna. Kontrollera Storage-reglerna i Firebase Console (tillåt public read på photos/).');
+        } else {
+          showError('Kunde inte ladda dagens bild. Försök igen senare.');
+        }
+      }
+    }
+
+    function setLoading(text) {
+      document.getElementById('loadingText').textContent = text;
+      document.getElementById('loadingArea').style.display  = 'flex';
+      document.getElementById('photoArea').style.display    = 'none';
+      document.getElementById('errorArea').style.display    = 'none';
+    }
+    function showError(msg) {
+      document.getElementById('loadingArea').style.display = 'none';
+      document.getElementById('photoArea').style.display   = 'none';
+      document.getElementById('errorArea').style.display   = 'block';
+      document.getElementById('errorText').textContent     = msg;
+    }
+
+    function showPhotoQuiz() {
+      document.getElementById('loadingArea').style.display = 'none';
+      document.getElementById('errorArea').style.display   = 'none';
+      document.getElementById('photoArea').style.display   = 'block';
+
+      const meta = todayPhotoMeta;
+
+      if (meta.isGPS && meta.options) {
+        // Visa svarsalternativ
+        document.getElementById('optionsArea').style.display   = 'block';
+        document.getElementById('freetextArea').style.display  = 'none';
+        document.getElementById('resultsArea').style.display   = 'none';
+
+        const wrap = document.getElementById('optionsWrap');
+        wrap.innerHTML = '';
+        const LETTERS = ['A','B','C'];
+        meta.options.forEach((opt, i) => {
+          const btn = document.createElement('button');
+          btn.className = 'option-btn';
+          btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span>${opt.label}`;
+          btn.onclick = () => submitChoice(i, opt.correct, opt.label);
+          wrap.appendChild(btn);
+        });
+      } else {
+        // Ingen GPS → fritext
+        document.getElementById('optionsArea').style.display   = 'none';
+        document.getElementById('freetextArea').style.display  = 'block';
+        document.getElementById('resultsArea').style.display   = 'none';
+      }
+
+      // Har vi redan svarat idag?
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
@@ -537,40 +591,47 @@
       });
     }
 
-    function submitAnswer(choiceIndex) {
-      // Disable all buttons immediately
+    // ══ SVAR ═════════════════════════════════════
+    const LETTERS = ['A','B','C'];
+
+    function submitChoice(idx, isCorrect, label) {
       document.querySelectorAll('.option-btn').forEach((btn, i) => {
         btn.disabled = true;
-        if (i === choiceIndex) btn.classList.add('selected');
+        if (i === idx) btn.classList.add('selected');
       });
-
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
-      const day   = getDayOfYear();
-      const qObj  = questions[day % questions.length];
-
-      db.ref(`pairs/${pKey}/days/${today}`).update({ date: today });
+      db.ref(`pairs/${pKey}/days/${today}`).update({ date: today, type: 'photo', filename: todayPhotoMeta.filename });
       db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({
-        name: myName,
-        choice: choiceIndex,
-        answer: qObj.options[choiceIndex],
-        correct: choiceIndex === qObj.correct,
-        ts: Date.now()
+        name: myName, answer: label, correct: isCorrect, type: 'choice', ts: Date.now()
+      }).then(() => showResults());
+    }
+
+    function submitFreetext() {
+      const text = document.getElementById('freetextInput').value.trim();
+      if (!text) return;
+      document.getElementById('freetextInput').disabled = true;
+      document.querySelector('#freetextArea .primary-btn').disabled = true;
+      const pKey  = safeKey(pairCode);
+      const nKey  = safeKey(myName);
+      const today = getTodayKey();
+      db.ref(`pairs/${pKey}/days/${today}`).update({ date: today, type: 'photo', filename: todayPhotoMeta.filename });
+      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({
+        name: myName, answer: text, correct: null, type: 'freetext', ts: Date.now()
       }).then(() => showResults());
     }
 
     function showResults() {
-      document.getElementById('optionsArea').style.display = 'none';
-      document.getElementById('resultsArea').style.display = 'block';
+      document.getElementById('optionsArea').style.display  = 'none';
+      document.getElementById('freetextArea').style.display = 'none';
+      document.getElementById('resultsArea').style.display  = 'block';
 
       if (dbOff) { dbOff(); dbOff = null; }
 
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
-      const day   = getDayOfYear();
-      const qObj  = questions[day % questions.length];
       const ref   = db.ref(`pairs/${pKey}/days/${today}/answers`);
 
       dbOff = ref.on('value', snap => {
@@ -589,21 +650,30 @@
         entries.forEach(([k, v]) => {
           const isMe = k === nKey;
           const bubble = document.createElement('div');
-          bubble.className = 'result-bubble ' + (v.correct ? 'correct' : 'wrong');
+          const cls = v.type === 'freetext' ? 'freetext-ans' : (v.correct ? 'correct-ans' : 'wrong-ans');
+          bubble.className = `result-bubble ${cls}`;
+          const icon = v.type === 'freetext' ? '♡' : (v.correct ? '✓' : '✗');
           bubble.innerHTML = `
             <div class="result-left">
               <div class="result-name">${v.name}${isMe ? ' · Du' : ''}</div>
-              <div class="result-answer">${LETTERS[v.choice]}. ${v.answer}</div>
+              <div class="result-answer">${v.answer}</div>
             </div>
-            <div class="result-icon">${v.correct ? '✓' : '✗'}</div>`;
+            <div class="result-icon">${icon}</div>`;
           wrap.appendChild(bubble);
         });
 
-        const count = entries.length;
-        if (count >= 2) {
+        const bothAnswered = entries.length >= 2;
+        const meta = todayPhotoMeta;
+
+        if (bothAnswered) {
           waiting.innerHTML = '';
-          reveal.style.display = 'block';
-          reveal.innerHTML = `<strong>Rätt svar</strong>${LETTERS[qObj.correct]}. ${qObj.options[qObj.correct]}`;
+          if (meta && meta.isGPS && meta.correctName) {
+            reveal.style.display = 'block';
+            reveal.innerHTML = `<strong>Rätt svar</strong>${meta.correctName}`;
+          } else if (meta && !meta.isGPS) {
+            reveal.style.display = 'block';
+            reveal.innerHTML = `<strong>Inga koordinater</strong>Jämför varandras gissningar ovan!`;
+          }
         } else {
           waiting.innerHTML = 'Väntar på din partners svar<span class="waiting-dots"></span>';
           reveal.style.display = 'none';
@@ -611,7 +681,18 @@
       });
     }
 
-    // ── INIT ──────────────────────────────────
+    // ══ ÖPPNA QUIZ ═══════════════════════════════
+    function openQuiz() {
+      document.getElementById('pairBadge').textContent = `♡  ${pairCode}`;
+      // Återställ vy
+      document.getElementById('loadingArea').style.display = 'flex';
+      document.getElementById('photoArea').style.display   = 'none';
+      document.getElementById('errorArea').style.display   = 'none';
+      showScreen('screenQuiz');
+      loadTodayPhoto();
+    }
+
+    // ══ INIT ═════════════════════════════════════
     const todayIdx = getDayOfYear() % tips.length;
     const tip      = tips[todayIdx];
     document.getElementById('dateStrip').textContent   = formatDate();
