@@ -197,14 +197,13 @@
       animation: fadeIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
       display: flex; align-items: center; justify-content: space-between; gap: 10px;
     }
-    .result-bubble.correct-ans { border-color: var(--green); }
-    .result-bubble.wrong-ans   { border-color: var(--red); }
+    .result-bubble.correct-ans  { border-color: var(--green); }
+    .result-bubble.wrong-ans    { border-color: var(--red); }
     .result-bubble.freetext-ans { border-color: rgba(196,133,90,0.4); }
     .result-left { display: flex; flex-direction: column; gap: 4px; }
     .result-name { font-size: 9px; font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase; color: var(--gold); }
     .result-answer { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 300; font-style: italic; color: var(--deep); line-height: 1.4; }
     .result-icon { font-size: 18px; flex-shrink: 0; }
-
     .correct-reveal {
       margin-top: 14px; padding: 12px 16px;
       background: rgba(122,170,110,0.1); border: 1px solid rgba(122,170,110,0.3);
@@ -225,7 +224,7 @@
     /* ── LOADING ── */
     .loading-wrap {
       display: flex; flex-direction: column; align-items: center; gap: 16px;
-      padding: 40px 0; color: var(--mid);
+      padding: 40px 0;
     }
     .loading-spinner {
       width: 32px; height: 32px; border-radius: 50%;
@@ -289,32 +288,24 @@
     <span class="back-link" onclick="showScreen('screenHome')">← Tillbaka</span>
     <div class="pair-badge" id="pairBadge"></div>
 
-    <!-- Laddar -->
     <div id="loadingArea" class="loading-wrap">
       <div class="loading-spinner"></div>
       <div class="loading-text" id="loadingText">Laddar dagens bild</div>
     </div>
 
-    <!-- Foto + fråga -->
     <div id="photoArea" style="display:none; width:100%">
       <div class="photo-card">
         <img class="photo-img" id="photoImg" src="" alt="Dagens bild">
         <div class="photo-body">
           <div class="photo-label">Var är vi?</div>
           <div class="photo-question">Var togs den här bilden?</div>
-
-          <!-- Alternativ (om GPS finns) -->
           <div id="optionsArea">
             <div class="options-wrap" id="optionsWrap"></div>
           </div>
-
-          <!-- Fritext (om GPS saknas) -->
           <div id="freetextArea" style="display:none">
             <input class="freetext-input" id="freetextInput" type="text" placeholder="Skriv din gissning…" autocomplete="off" autocorrect="off">
             <button class="primary-btn" onclick="submitFreetext()">Skicka svar</button>
           </div>
-
-          <!-- Resultat -->
           <div id="resultsArea" style="display:none">
             <div class="results-wrap" id="resultsWrap"></div>
             <div id="correctReveal" class="correct-reveal" style="display:none"></div>
@@ -324,7 +315,6 @@
       </div>
     </div>
 
-    <!-- Fel -->
     <div id="errorArea" style="display:none; text-align:center; padding: 20px 0;">
       <div style="font-size:13px; font-weight:200; letter-spacing:0.05em; color:var(--mid); line-height:1.7;" id="errorText"></div>
     </div>
@@ -336,11 +326,13 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
-  <!-- exifr: läser EXIF/GPS från bilder -->
+  <!-- exifr: läser EXIF/GPS ur bildfilen -->
   <script src="https://cdn.jsdelivr.net/npm/exifr@7/dist/full.umd.cjs"></script>
+  <!-- heic2any: konverterar HEIC → JPEG i webbläsaren (behövs för Android/Chrome) -->
+  <script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.4/dist/heic2any.min.js"></script>
 
   <script>
-    // ══ FIREBASE ════════════════════════════════
+    // ── FIREBASE ──────────────────────────────────────────
     const firebaseConfig = {
       apiKey:            "AIzaSyA6qXrBJLPhFIflfeGUr6KBaomjx45_78Y",
       authDomain:        "karlek-narvaro.firebaseapp.com",
@@ -355,7 +347,7 @@
     const db      = firebase.database();
     const storage = firebase.storage();
 
-    // ══ TIPS ════════════════════════════════════
+    // ── TIPS ──────────────────────────────────────────────
     const tips = [
       { category: "Närvaro",        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.", desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns." },
       { category: "Uppskattning",   text: "Berätta för din partner något specifikt du beundrar hos dem idag.", desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge." },
@@ -381,7 +373,7 @@
       { category: "Reflektion",     text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?", desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?" }
     ];
 
-    // ══ HELPERS ═════════════════════════════════
+    // ── HELPERS ───────────────────────────────────────────
     function getDayOfYear() {
       const now = new Date(), start = new Date(now.getFullYear(), 0, 0);
       return Math.floor((now - start) / 86400000);
@@ -405,13 +397,28 @@
       return arr;
     }
 
-    // ══ STATE ════════════════════════════════════
+    // Kontrollera om webbläsaren kan visa HEIC nativt (Safari/iOS kan, Chrome/Android kan inte)
+    function isHeicFile(filename) {
+      return /\.(heic|heif)$/i.test(filename);
+    }
+    async function browserSupportsHeic() {
+      try {
+        const img = new Image();
+        // Liten HEIC-testbild (1x1 pixel, base64)
+        img.src = 'data:image/heic;base64,AAAAHGZ0eXBoZWljAAAAAG1pZjFoZWljAAAA';
+        await new Promise((res) => { img.onload = img.onerror = res; });
+        return img.naturalWidth > 0;
+      } catch { return false; }
+    }
+
+    // ── STATE ─────────────────────────────────────────────
     let myName   = localStorage.getItem('myName')   || '';
     let pairCode = localStorage.getItem('pairCode') || '';
     let dbOff    = null;
-    let todayPhotoMeta = null; // { url, correctName, options, isGPS }
+    let todayPhotoMeta = null;
+    let heicSupported  = null; // cachas efter första kollen
 
-    // ══ NAVIGATION ═══════════════════════════════
+    // ── NAVIGATION ────────────────────────────────────────
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById(id).classList.add('active');
@@ -421,9 +428,7 @@
         document.getElementById('inputPairCode').value = pairCode;
         document.getElementById('inputMyName').value   = myName;
         showScreen('screenSetup');
-      } else {
-        openQuiz();
-      }
+      } else { openQuiz(); }
     }
     function saveSetup() {
       const code = document.getElementById('inputPairCode').value.trim();
@@ -445,75 +450,76 @@
       showScreen('screenSetup');
     }
 
-    // ══ GEOCODING ════════════════════════════════
+    // ── GEOCODING ─────────────────────────────────────────
     async function reverseGeocode(lat, lng) {
       try {
-        const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10&accept-language=sv`;
-        const res = await fetch(url, { headers: { 'Accept-Language': 'sv' } });
+        const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&zoom=10`, { headers: { 'Accept-Language': 'sv' } });
         const data = await res.json();
-        const addr = data.address || {};
-        // Prioritera stad > stad_distrikt > by > municipality > county
-        return addr.city || addr.town || addr.village || addr.municipality || addr.county || addr.country || null;
+        const a    = data.address || {};
+        return a.city || a.town || a.village || a.municipality || a.county || a.country || null;
       } catch { return null; }
     }
-
     async function buildOptions(lat, lng, correctName) {
-      // Generera 2 felaktiga alternativ via offset-koordinater (~150–350 km bort)
-      const offsets = [
-        [2.8,  1.6],
-        [-2.1, 3.2],
-        [1.5, -3.0],
-        [-3.5, -1.8]
-      ];
-      shuffle(offsets);
-      const wrongs = [];
+      const offsets = shuffle([[2.8,1.6],[-2.1,3.2],[1.5,-3.0],[-3.5,-1.8]]);
+      const wrongs  = [];
       for (const [dlat, dlng] of offsets) {
         if (wrongs.length >= 2) break;
         const name = await reverseGeocode(lat + dlat, lng + dlng);
-        if (name && name !== correctName && !wrongs.includes(name)) {
-          wrongs.push(name);
-        }
+        if (name && name !== correctName && !wrongs.includes(name)) wrongs.push(name);
       }
-      // Fyll på med generiska om geocoding misslyckas
-      const fallbacks = ['Stockholm', 'Göteborg', 'Malmö', 'Oslo', 'Köpenhamn', 'Berlin', 'Paris', 'Barcelona'];
+      const fallbacks = ['Stockholm','Göteborg','Malmö','Oslo','Köpenhamn','Berlin','Paris','Barcelona'];
       for (const f of fallbacks) {
         if (wrongs.length >= 2) break;
         if (f !== correctName && !wrongs.includes(f)) wrongs.push(f);
       }
-      // Blanda rätt + fel
-      const all = [{ label: correctName, correct: true }, ...wrongs.slice(0,2).map(w => ({ label: w, correct: false }))];
-      return shuffle(all);
+      return shuffle([{ label: correctName, correct: true }, ...wrongs.slice(0,2).map(w => ({ label: w, correct: false }))]);
     }
 
-    // ══ FOTO FRÅN STORAGE ════════════════════════
+    // ── FOTO FRÅN STORAGE ─────────────────────────────────
     async function loadTodayPhoto() {
       setLoading('Hämtar dagens bild');
       try {
-        // Lista alla filer i photos/
         const listResult = await storage.ref('photos').listAll();
         const items = listResult.items;
         if (items.length === 0) {
-          showError('Inga bilder hittades i Storage. Lägg till bilder i mappen \'photos\' i Firebase Storage.');
+          showError("Inga bilder hittades. Lägg till bilder i mappen 'photos' i Firebase Storage.");
           return;
         }
-        // Välj dagens bild baserat på dag på året
+
         const idx = getDayOfYear() % items.length;
         const ref = items[idx];
-
         setLoading('Laddar bild');
         const url = await ref.getDownloadURL();
 
-        // Visa bilden direkt
-        document.getElementById('photoImg').src = url;
+        // Hämta bilden som blob (behövs för EXIF + eventuell HEIC-konvertering)
+        setLoading('Läser bild');
+        const response = await fetch(url);
+        let blob = await response.blob();
 
+        // Läs EXIF/GPS från ursprunglig blob (innan eventuell konvertering)
         setLoading('Läser platsdata');
         let gps = null;
-        try {
-          gps = await exifr.gps(url);
-        } catch (e) {
-          console.log('EXIF-läsning misslyckades:', e);
+        try { gps = await exifr.gps(blob); } catch(e) { console.log('EXIF:', e); }
+
+        // HEIC-konvertering för Android/Chrome
+        let displayUrl = url;
+        if (isHeicFile(ref.name)) {
+          if (heicSupported === null) heicSupported = await browserSupportsHeic();
+          if (!heicSupported) {
+            setLoading('Konverterar bild');
+            try {
+              const jpegBlob = await heic2any({ blob, toType: 'image/jpeg', quality: 0.85 });
+              displayUrl = URL.createObjectURL(jpegBlob);
+            } catch(e) {
+              console.log('HEIC-konvertering misslyckades:', e);
+              // Fortsätt med original-URL — kan visa fel på Android men försök ändå
+            }
+          }
         }
 
+        document.getElementById('photoImg').src = displayUrl;
+
+        // Bygg quiz-metadata
         if (gps && gps.latitude && gps.longitude) {
           setLoading('Söker upp platsen');
           const correctName = await reverseGeocode(gps.latitude, gps.longitude);
@@ -532,7 +538,7 @@
       } catch (err) {
         console.error(err);
         if (err.code === 'storage/unauthorized') {
-          showError('Kunde inte läsa bilderna. Kontrollera Storage-reglerna i Firebase Console (tillåt public read på photos/).');
+          showError('Åtkomst nekad. Kontrollera Storage-reglerna i Firebase Console.');
         } else {
           showError('Kunde inte ladda dagens bild. Försök igen senare.');
         }
@@ -541,9 +547,9 @@
 
     function setLoading(text) {
       document.getElementById('loadingText').textContent = text;
-      document.getElementById('loadingArea').style.display  = 'flex';
-      document.getElementById('photoArea').style.display    = 'none';
-      document.getElementById('errorArea').style.display    = 'none';
+      document.getElementById('loadingArea').style.display = 'flex';
+      document.getElementById('photoArea').style.display   = 'none';
+      document.getElementById('errorArea').style.display   = 'none';
     }
     function showError(msg) {
       document.getElementById('loadingArea').style.display = 'none';
@@ -558,31 +564,26 @@
       document.getElementById('photoArea').style.display   = 'block';
 
       const meta = todayPhotoMeta;
-
       if (meta.isGPS && meta.options) {
-        // Visa svarsalternativ
-        document.getElementById('optionsArea').style.display   = 'block';
-        document.getElementById('freetextArea').style.display  = 'none';
-        document.getElementById('resultsArea').style.display   = 'none';
-
+        document.getElementById('optionsArea').style.display  = 'block';
+        document.getElementById('freetextArea').style.display = 'none';
+        document.getElementById('resultsArea').style.display  = 'none';
         const wrap = document.getElementById('optionsWrap');
         wrap.innerHTML = '';
-        const LETTERS = ['A','B','C'];
+        const L = ['A','B','C'];
         meta.options.forEach((opt, i) => {
           const btn = document.createElement('button');
           btn.className = 'option-btn';
-          btn.innerHTML = `<span class="option-letter">${LETTERS[i]}</span>${opt.label}`;
+          btn.innerHTML = `<span class="option-letter">${L[i]}</span>${opt.label}`;
           btn.onclick = () => submitChoice(i, opt.correct, opt.label);
           wrap.appendChild(btn);
         });
       } else {
-        // Ingen GPS → fritext
-        document.getElementById('optionsArea').style.display   = 'none';
-        document.getElementById('freetextArea').style.display  = 'block';
-        document.getElementById('resultsArea').style.display   = 'none';
+        document.getElementById('optionsArea').style.display  = 'none';
+        document.getElementById('freetextArea').style.display = 'block';
+        document.getElementById('resultsArea').style.display  = 'none';
       }
 
-      // Har vi redan svarat idag?
       const pKey  = safeKey(pairCode);
       const nKey  = safeKey(myName);
       const today = getTodayKey();
@@ -591,7 +592,7 @@
       });
     }
 
-    // ══ SVAR ═════════════════════════════════════
+    // ── SVAR ──────────────────────────────────────────────
     const LETTERS = ['A','B','C'];
 
     function submitChoice(idx, isCorrect, label) {
@@ -648,11 +649,11 @@
         });
 
         entries.forEach(([k, v]) => {
-          const isMe = k === nKey;
+          const isMe   = k === nKey;
           const bubble = document.createElement('div');
-          const cls = v.type === 'freetext' ? 'freetext-ans' : (v.correct ? 'correct-ans' : 'wrong-ans');
+          const cls    = v.type === 'freetext' ? 'freetext-ans' : (v.correct ? 'correct-ans' : 'wrong-ans');
+          const icon   = v.type === 'freetext' ? '♡' : (v.correct ? '✓' : '✗');
           bubble.className = `result-bubble ${cls}`;
-          const icon = v.type === 'freetext' ? '♡' : (v.correct ? '✓' : '✗');
           bubble.innerHTML = `
             <div class="result-left">
               <div class="result-name">${v.name}${isMe ? ' · Du' : ''}</div>
@@ -662,16 +663,13 @@
           wrap.appendChild(bubble);
         });
 
-        const bothAnswered = entries.length >= 2;
-        const meta = todayPhotoMeta;
-
-        if (bothAnswered) {
+        if (entries.length >= 2) {
           waiting.innerHTML = '';
+          const meta = todayPhotoMeta;
+          reveal.style.display = 'block';
           if (meta && meta.isGPS && meta.correctName) {
-            reveal.style.display = 'block';
             reveal.innerHTML = `<strong>Rätt svar</strong>${meta.correctName}`;
-          } else if (meta && !meta.isGPS) {
-            reveal.style.display = 'block';
+          } else {
             reveal.innerHTML = `<strong>Inga koordinater</strong>Jämför varandras gissningar ovan!`;
           }
         } else {
@@ -681,18 +679,17 @@
       });
     }
 
-    // ══ ÖPPNA QUIZ ═══════════════════════════════
+    // ── ÖPPNA QUIZ ────────────────────────────────────────
     function openQuiz() {
-      document.getElementById('pairBadge').textContent = `♡  ${pairCode}`;
-      // Återställ vy
-      document.getElementById('loadingArea').style.display = 'flex';
-      document.getElementById('photoArea').style.display   = 'none';
-      document.getElementById('errorArea').style.display   = 'none';
+      document.getElementById('pairBadge').textContent      = `♡  ${pairCode}`;
+      document.getElementById('loadingArea').style.display  = 'flex';
+      document.getElementById('photoArea').style.display    = 'none';
+      document.getElementById('errorArea').style.display    = 'none';
       showScreen('screenQuiz');
       loadTodayPhoto();
     }
 
-    // ══ INIT ═════════════════════════════════════
+    // ── INIT ──────────────────────────────────────────────
     const todayIdx = getDayOfYear() % tips.length;
     const tip      = tips[todayIdx];
     document.getElementById('dateStrip').textContent   = formatDate();
