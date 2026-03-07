@@ -38,7 +38,6 @@
       position: relative;
     }
 
-    /* Texture overlay */
     body::before {
       content: '';
       position: fixed;
@@ -48,49 +47,31 @@
       z-index: 0;
     }
 
-    /* Background decorative circles */
-    .bg-deco {
-      position: fixed;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 0;
-    }
-    .bg-deco-1 {
-      width: 320px; height: 320px;
-      background: radial-gradient(circle, rgba(196,133,90,0.12), transparent 70%);
-      top: -80px; right: -80px;
-    }
-    .bg-deco-2 {
-      width: 260px; height: 260px;
-      background: radial-gradient(circle, rgba(212,132,106,0.1), transparent 70%);
-      bottom: -60px; left: -60px;
-    }
+    .bg-deco { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+    .bg-deco-1 { width: 320px; height: 320px; background: radial-gradient(circle, rgba(196,133,90,0.12), transparent 70%); top: -80px; right: -80px; }
+    .bg-deco-2 { width: 260px; height: 260px; background: radial-gradient(circle, rgba(212,132,106,0.1), transparent 70%); bottom: -60px; left: -60px; }
 
-    .app {
+    /* ── SCREENS ── */
+    .screen {
+      display: none;
       position: relative;
       z-index: 1;
       width: 100%;
       max-width: 390px;
-      padding: 40px 32px 50px;
-      display: flex;
+      padding: 44px 32px 52px;
       flex-direction: column;
       align-items: center;
-      gap: 0;
+      overflow-y: auto;
+      max-height: 100vh;
     }
+    .screen.active { display: flex; }
 
-    /* Header */
-    .header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-
+    /* ── HEADER ── */
+    .header { text-align: center; margin-bottom: 32px; }
     .header-icon {
-      font-size: 28px;
-      margin-bottom: 10px;
-      display: block;
+      font-size: 28px; margin-bottom: 10px; display: block;
       animation: heartbeat 3s ease-in-out infinite;
     }
-
     @keyframes heartbeat {
       0%, 100% { transform: scale(1); }
       15% { transform: scale(1.15); }
@@ -98,277 +79,459 @@
       45% { transform: scale(1.08); }
       60% { transform: scale(1); }
     }
-
     .header-title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 16px;
-      font-weight: 300;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--warm);
+      font-size: 16px; font-weight: 300;
+      letter-spacing: 0.3em; text-transform: uppercase; color: var(--warm);
     }
 
-    /* Date strip */
     .date-strip {
-      font-size: 13px;
-      margin-bottom: 28px;
-      text-align: center;
+      font-size: 13px; font-weight: 200;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 28px; text-align: center;
     }
 
-    /* Card */
+    /* ── CARD ── */
     .card {
       width: 100%;
       background: rgba(255,255,255,0.65);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: 1px solid rgba(196,133,90,0.2);
-      border-radius: 24px;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(196,133,90,0.2); border-radius: 24px;
       padding: 36px 28px 32px;
-      box-shadow:
-        0 4px 30px rgba(107,63,34,0.07),
-        0 1px 0 rgba(255,255,255,0.9) inset;
-      position: relative;
-      overflow: hidden;
-      animation: fadeSlideIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+      box-shadow: 0 4px 30px rgba(107,63,34,0.07), 0 1px 0 rgba(255,255,255,0.9) inset;
+      position: relative; overflow: hidden;
+      animation: fadeIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
     }
-
-    @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateY(20px); }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
     }
-
-    /* Decorative corner line */
     .card::before {
-      content: '';
-      position: absolute;
-      top: 16px; left: 16px; right: 16px;
-      height: 1px;
+      content: ''; position: absolute; top: 16px; left: 16px; right: 16px; height: 1px;
       background: linear-gradient(to right, transparent, rgba(196,133,90,0.3), transparent);
     }
 
     .tip-category {
-      font-size: 11px;
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-size: 11px; font-weight: 300; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--rose);
+      margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
     }
-
-    .tip-category::before {
-      content: '';
-      display: block;
-      width: 20px;
-      height: 1px;
-      background: var(--rose);
-      opacity: 0.6;
-    }
+    .tip-category::before { content: ''; display: block; width: 20px; height: 1px; background: var(--rose); opacity: 0.6; }
 
     .tip-number {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 72px;
-      font-weight: 300;
-      color: rgba(196,133,90,0.08);
-      line-height: 1;
-      position: absolute;
-      top: 24px;
-      right: 24px;
-      font-style: italic;
+      font-family: 'Cormorant Garamond', serif; font-size: 72px; font-weight: 300;
+      color: rgba(196,133,90,0.08); line-height: 1;
+      position: absolute; top: 24px; right: 24px; font-style: italic;
     }
-
     .tip-text {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 28px;
-      font-weight: 300;
-      line-height: 1.55;
-      color: var(--deep);
-      margin-bottom: 20px;
-      font-style: italic;
+      font-family: 'Cormorant Garamond', serif; font-size: 28px;
+      font-weight: 300; line-height: 1.55; color: var(--deep);
+      margin-bottom: 20px; font-style: italic;
     }
-
     .tip-description {
-      font-size: 14px;
-      font-weight: 200;
-      letter-spacing: 0.05em;
-      line-height: 1.7;
-      color: var(--mid);
-      opacity: 0.85;
+      font-size: 14px; font-weight: 200; letter-spacing: 0.05em;
+      line-height: 1.7; color: var(--mid); opacity: 0.85;
     }
 
+    /* ── BUTTONS ── */
+    .heart-btn {
+      margin-top: 28px; background: none;
+      border: 1px solid rgba(196,133,90,0.35); border-radius: 50px;
+      padding: 14px 36px;
+      font-family: 'Josefin Sans', sans-serif; font-size: 11px;
+      font-weight: 300; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--warm); cursor: pointer; transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .heart-btn:active { background: rgba(196,133,90,0.1); transform: scale(0.97); }
 
+    .primary-btn {
+      width: 100%; background: var(--warm); border: none; border-radius: 50px;
+      padding: 16px;
+      font-family: 'Josefin Sans', sans-serif; font-size: 11px; font-weight: 300;
+      letter-spacing: 0.25em; text-transform: uppercase; color: white;
+      cursor: pointer; transition: all 0.3s ease;
+      -webkit-tap-highlight-color: transparent; margin-top: 4px;
+    }
+    .primary-btn:active { background: var(--mid); transform: scale(0.98); }
+    .primary-btn:disabled { opacity: 0.4; pointer-events: none; }
 
-    /* Footer */
     .footer {
-      margin-top: 28px;
-      text-align: center;
-      font-size: 11px;
+      margin-top: 24px; text-align: center; font-size: 11px;
+      font-weight: 200; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(107,63,34,0.35);
     }
+    .back-link {
+      font-size: 11px; font-weight: 200; letter-spacing: 0.2em;
+      text-transform: uppercase; color: rgba(107,63,34,0.45);
+      cursor: pointer; margin-bottom: 24px; align-self: flex-start;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back-link:active { color: var(--warm); }
 
+    /* ── SETUP ── */
+    .setup-title {
+      font-family: 'Cormorant Garamond', serif; font-size: 26px;
+      font-weight: 300; font-style: italic; color: var(--deep);
+      text-align: center; margin-bottom: 8px;
+    }
+    .setup-sub {
+      font-size: 12px; font-weight: 200; letter-spacing: 0.08em;
+      color: var(--mid); opacity: 0.7; text-align: center;
+      margin-bottom: 30px; line-height: 1.7;
+    }
+    .field-label {
+      font-size: 10px; font-weight: 300; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 8px; align-self: flex-start;
+    }
+    .field-input {
+      width: 100%; background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(196,133,90,0.25); border-radius: 12px;
+      padding: 14px 18px;
+      font-family: 'Josefin Sans', sans-serif; font-size: 15px;
+      font-weight: 300; color: var(--deep); outline: none;
+      margin-bottom: 20px; transition: border-color 0.2s;
+    }
+    .field-input:focus { border-color: var(--warm); }
+    .field-input::placeholder { color: rgba(107,63,34,0.3); }
+    .error-msg { font-size: 12px; color: var(--rose); text-align: center; margin-top: 6px; letter-spacing: 0.05em; }
 
+    /* ── QUIZ ── */
+    .pair-badge {
+      font-size: 11px; font-weight: 200; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 20px; text-align: center;
+    }
+    .question-label {
+      font-size: 11px; font-weight: 300; letter-spacing: 0.3em;
+      text-transform: uppercase; color: var(--rose);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+    .question-label::before { content: ''; display: block; width: 20px; height: 1px; background: var(--rose); opacity: 0.6; }
+
+    .question-text {
+      font-family: 'Cormorant Garamond', serif; font-size: 26px;
+      font-weight: 300; font-style: italic; line-height: 1.5;
+      color: var(--deep); margin-bottom: 24px;
+    }
+    .answer-input {
+      width: 100%; background: rgba(255,255,255,0.7);
+      border: 1px solid rgba(196,133,90,0.25); border-radius: 14px;
+      padding: 14px 18px;
+      font-family: 'Josefin Sans', sans-serif; font-size: 14px;
+      font-weight: 200; color: var(--deep); outline: none;
+      resize: none; min-height: 90px; line-height: 1.6;
+      transition: border-color 0.2s; margin-bottom: 14px;
+    }
+    .answer-input:focus { border-color: var(--warm); }
+    .answer-input::placeholder { color: rgba(107,63,34,0.3); }
+
+    /* ── ANSWERS ── */
+    .answers-wrap { width: 100%; display: flex; flex-direction: column; gap: 12px; }
+    .answer-bubble {
+      background: rgba(255,255,255,0.65);
+      border: 1px solid rgba(196,133,90,0.18); border-radius: 18px;
+      padding: 18px 20px;
+      animation: fadeIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
+    }
+    .answer-bubble.mine { border-color: rgba(196,133,90,0.45); }
+    .bubble-name {
+      font-size: 9px; font-weight: 300; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+    }
+    .bubble-text {
+      font-family: 'Cormorant Garamond', serif; font-size: 18px;
+      font-weight: 300; font-style: italic; line-height: 1.55; color: var(--deep);
+    }
+    .waiting-msg {
+      font-size: 12px; font-weight: 200; letter-spacing: 0.08em;
+      color: var(--mid); opacity: 0.6; text-align: center;
+      margin-top: 18px; line-height: 1.6;
+    }
+    .waiting-dots::after {
+      content: ''; animation: dots 1.5s steps(3, end) infinite;
+    }
+    @keyframes dots { 0%{content:''} 33%{content:'.'} 66%{content:'..'} 100%{content:'...'} }
+
+    .reset-link {
+      margin-top: 20px; font-size: 10px; letter-spacing: 0.2em;
+      text-transform: uppercase; color: rgba(107,63,34,0.35);
+      cursor: pointer; text-align: center;
+    }
+    .reset-link:active { color: var(--warm); }
   </style>
 </head>
 <body>
   <div class="bg-deco bg-deco-1"></div>
   <div class="bg-deco bg-deco-2"></div>
 
-  <div class="app">
+  <!-- ══ SKÄRM 1: HEM ══ -->
+  <div class="screen active" id="screenHome">
     <div class="header">
       <span class="header-icon">♡</span>
       <div class="header-title">Kärlek & Närvaro</div>
     </div>
-
     <div class="date-strip" id="dateStrip"></div>
-
-    <div class="card" id="card">
-      <div class="tip-number" id="tipNumber"></div>
+    <div class="card">
+      <div class="tip-number"  id="tipNumber"></div>
       <div class="tip-category" id="tipCategory"></div>
-      <div class="tip-text" id="tipText"></div>
+      <div class="tip-text"    id="tipText"></div>
       <div class="tip-description" id="tipDesc"></div>
     </div>
-
+    <button class="heart-btn" onclick="goToQuiz()">♡ &nbsp; Dagens fråga</button>
     <div class="footer">Varje dag ett litet steg</div>
   </div>
 
+  <!-- ══ SKÄRM 2: INSTÄLLNING ══ -->
+  <div class="screen" id="screenSetup">
+    <div class="header">
+      <span class="header-icon">♡</span>
+      <div class="header-title">Kärlek & Närvaro</div>
+    </div>
+    <span class="back-link" onclick="showScreen('screenHome')">← Tillbaka</span>
+    <div class="setup-title">Koppla ihop er</div>
+    <div class="setup-sub">Välj ett gemensamt namn för er relation och ange ditt eget namn. Båda måste använda exakt samma gemensamma namn.</div>
+    <div class="field-label">Ert gemensamma namn</div>
+    <input class="field-input" id="inputPairCode" type="text" placeholder="t.ex. CarlOchAnna" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="field-label">Ditt namn</div>
+    <input class="field-input" id="inputMyName" type="text" placeholder="t.ex. Carl" autocomplete="off" autocorrect="off">
+    <div id="setupError" class="error-msg"></div>
+    <button class="primary-btn" onclick="saveSetup()">Fortsätt →</button>
+  </div>
+
+  <!-- ══ SKÄRM 3: FRÅGA ══ -->
+  <div class="screen" id="screenQuiz">
+    <div class="header">
+      <span class="header-icon">♡</span>
+      <div class="header-title">Kärlek & Närvaro</div>
+    </div>
+    <span class="back-link" onclick="showScreen('screenHome')">← Tillbaka</span>
+    <div class="pair-badge" id="pairBadge"></div>
+
+    <div class="card">
+      <div class="question-label">Dagens fråga</div>
+      <div class="question-text" id="questionText"></div>
+
+      <div id="answerInputArea">
+        <textarea class="answer-input" id="answerInput" placeholder="Skriv ditt svar…"></textarea>
+        <button class="primary-btn" onclick="submitAnswer()">Skicka svar</button>
+      </div>
+
+      <div id="answersArea" style="display:none">
+        <div class="answers-wrap" id="answersWrap"></div>
+        <div class="waiting-msg" id="waitingMsg"></div>
+      </div>
+    </div>
+
+    <div class="reset-link" onclick="resetSetup()">Byt parkod / namn</div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
   <script>
+    const firebaseConfig = {
+      apiKey:            "AIzaSyA6qXrBJLPhFIflfeGUr6KBaomjx45_78Y",
+      authDomain:        "karlek-narvaro.firebaseapp.com",
+      databaseURL:       "https://karlek-narvaro-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId:         "karlek-narvaro",
+      storageBucket:     "karlek-narvaro.firebasestorage.app",
+      messagingSenderId: "211166470227",
+      appId:             "1:211166470227:web:d66bcf6bf4bd9e391e66a6",
+      measurementId:     "G-Q0ZN7HRR8D"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     const tips = [
-      {
-        category: "Närvaro",
-        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.",
-        desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns."
-      },
-      {
-        category: "Uppskattning",
-        text: "Berätta för din partner något specifikt du beundrar hos dem idag.",
-        desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge."
-      },
-      {
-        category: "Beröring",
-        text: "En lång kram, minst 20 sekunder, utan orsak.",
-        desc: "Forskning visar att en kram på 20 sekunder frisätter oxytocin — kroppens bindningshormon. Inget behöver sägas."
-      },
-      {
-        category: "Lyssna djupt",
-        text: "Ställ en fråga om din partners dag och lyssna utan att avbryta.",
-        desc: "Försök att förstå deras upplevelse, inte lösa deras problem. Ibland är det att bli lyssnad på som betyder mest."
-      },
-      {
-        category: "Liten gest",
-        text: "Gör något litet som du vet att din partner uppskattar — utan att bli ombedd.",
-        desc: "Det behöver inte vara stort. Kaffe på morgonen, en lapp på kudden, att sköta något de annars gör. Uppmärksamheten är poängen."
-      },
-      {
-        category: "Minnen",
-        text: "Dela ett favoritminne ni har tillsammans.",
-        desc: "Att återuppleva gemensamma minnen stärker bandet. Det påminner er om varför ni valde varandra."
-      },
-      {
-        category: "Ord",
-        text: "Skicka ett meddelande mitt på dagen bara för att säga att du tänker på dem.",
-        desc: "En enkel mening — utan agenda, utan fråga — visar att din partner finns i dina tankar under dagen."
-      },
-      {
-        category: "Tid för två",
-        text: "Planera något ni kan se fram emot tillsammans, stort eller litet.",
-        desc: "Att ha något att längta efter skapar en positiv energi i relationen. Även en enkel promenad kan bli ett äventyr."
-      },
-      {
-        category: "Ursäkt",
-        text: "Om det finns något olöst — ta det första steget mot försoning idag.",
-        desc: "Det kräver mod att gå tillbaka och rätta till något. Men det skapar tillit och visar att relationen är viktigare än att ha rätt."
-      },
-      {
-        category: "Förvåna",
-        text: "Gör något oväntat som du vet gör din partner glad.",
-        desc: "Rutiner är trygga, men spontanitet håller kärleken levande. Tänk på vad som brukade glädja dem — och gör det."
-      },
-      {
-        category: "Lär dig mer",
-        text: "Fråga din partner om en dröm eller ett mål du kanske inte känner till.",
-        desc: "Även i långa relationer finns djup att utforska. Nyfiken kärlek är kärlek som aldrig åldras."
-      },
-      {
-        category: "Acceptans",
-        text: "Lägg märke till något du annars brukar kritisera — och välj att acceptera det idag.",
-        desc: "Att acceptera sin partner som de är, snarare än som vi vill att de ska vara, är en av kärlekens vackraste uttryck."
-      },
-      {
-        category: "Skratt",
-        text: "Hitta något ni kan skratta åt tillsammans idag.",
-        desc: "Gemensamt skratt är lim. Det lindrar spänning, skapar intimitet och påminner er om att ni är vänner."
-      },
-      {
-        category: "Stöd",
-        text: "Fråga: Finns det något jag kan göra för att underlätta din dag?",
-        desc: "Att erbjuda sig att hjälpa — och verkligen mena det — visar att du ser din partner och bryr dig om deras välmående."
-      },
-      {
-        category: "Romantik",
-        text: "Tänd ljus ikväll. Ät tillsammans utan distraktioner.",
-        desc: "Det behövs ingen speciell anledning. Stämning skapar utrymme för samtal, kontakt och mjukhet."
-      },
-      {
-        category: "Gränser",
-        text: "Fråga din partner om de behöver tid för sig själva — och respektera svaret.",
-        desc: "Att respektera din partners behov av enskildhet är ett tecken på mogen kärlek. Utrymme är inte avvisning."
-      },
-      {
-        category: "Kropp & Sinne",
-        text: "Prova något nytt tillsammans — en ny aktivitet, mat eller plats.",
-        desc: "Nya upplevelser frigör dopamin, som hjärnan associerar med din partner. Det väcker känslan av förälskelse."
-      },
-      {
-        category: "Tacksamhet",
-        text: "Skriv ner tre saker du är tacksam för i din relation.",
-        desc: "Tacksamhet riktar uppmärksamheten mot det goda. Det förändrar hur vi ser på vår partner och vår vardag."
-      },
-      {
-        category: "Ärlighet",
-        text: "Dela något du känner men sällan säger.",
-        desc: "Sårbarhet bygger intimitet. Att dela det osagda — en rädsla, en dröm, en tack — skapar djupare kontakt."
-      },
-      {
-        category: "Hänsyn",
-        text: "Gör dig redo 10 minuter innan ni ska iväg — för din partners skull.",
-        desc: "Små hänsyn visar respekt. Det berättar: 'Jag värdesätter din tid. Du betyder något.'"
-      },
-      {
-        category: "Kärlek & Handling",
-        text: "Visa kärlek på det sätt din partner faktiskt tar emot den bäst.",
-        desc: "Vi ger ofta kärlek på det sätt vi själva vill ha den. Fundera på om din partner föredrar ord, handlingar, beröring, tid eller gåvor."
-      },
-      {
-        category: "Reflektion",
-        text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?",
-        desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?"
-      }
+      { category: "Närvaro",        text: "Lägg ifrån dig telefonen i tio minuter och ge din partner din fulla uppmärksamhet.", desc: "Verklig närvaro är en av de mest värdefulla gåvorna du kan ge. Ögonkontakt, ett leende, att verkligen lyssna — det syns och känns." },
+      { category: "Uppskattning",   text: "Berätta för din partner något specifikt du beundrar hos dem idag.", desc: "Undvik allmänna komplimanger. Säg exakt vad du menar: 'Jag älskar hur du alltid tar hand om det lilla.' Det stannar kvar länge." },
+      { category: "Beröring",       text: "En lång kram, minst 20 sekunder, utan orsak.", desc: "Forskning visar att en kram på 20 sekunder frisätter oxytocin — kroppens bindningshormon. Inget behöver sägas." },
+      { category: "Lyssna djupt",   text: "Ställ en fråga om din partners dag och lyssna utan att avbryta.", desc: "Försök att förstå deras upplevelse, inte lösa deras problem. Ibland är det att bli lyssnad på som betyder mest." },
+      { category: "Liten gest",     text: "Gör något litet som du vet att din partner uppskattar — utan att bli ombedd.", desc: "Det behöver inte vara stort. Kaffe på morgonen, en lapp på kudden, att sköta något de annars gör. Uppmärksamheten är poängen." },
+      { category: "Minnen",         text: "Dela ett favoritminne ni har tillsammans.", desc: "Att återuppleva gemensamma minnen stärker bandet. Det påminner er om varför ni valde varandra." },
+      { category: "Ord",            text: "Skicka ett meddelande mitt på dagen bara för att säga att du tänker på dem.", desc: "En enkel mening — utan agenda, utan fråga — visar att din partner finns i dina tankar under dagen." },
+      { category: "Tid för två",    text: "Planera något ni kan se fram emot tillsammans, stort eller litet.", desc: "Att ha något att längta efter skapar en positiv energi i relationen. Även en enkel promenad kan bli ett äventyr." },
+      { category: "Ursäkt",         text: "Om det finns något olöst — ta det första steget mot försoning idag.", desc: "Det kräver mod att gå tillbaka och rätta till något. Men det skapar tillit och visar att relationen är viktigare än att ha rätt." },
+      { category: "Förvåna",        text: "Gör något oväntat som du vet gör din partner glad.", desc: "Rutiner är trygga, men spontanitet håller kärleken levande. Tänk på vad som brukade glädja dem — och gör det." },
+      { category: "Lär dig mer",    text: "Fråga din partner om en dröm eller ett mål du kanske inte känner till.", desc: "Även i långa relationer finns djup att utforska. Nyfiken kärlek är kärlek som aldrig åldras." },
+      { category: "Acceptans",      text: "Lägg märke till något du annars brukar kritisera — och välj att acceptera det idag.", desc: "Att acceptera sin partner som de är, snarare än som vi vill att de ska vara, är en av kärlekens vackraste uttryck." },
+      { category: "Skratt",         text: "Hitta något ni kan skratta åt tillsammans idag.", desc: "Gemensamt skratt är lim. Det lindrar spänning, skapar intimitet och påminner er om att ni är vänner." },
+      { category: "Stöd",           text: "Fråga: Finns det något jag kan göra för att underlätta din dag?", desc: "Att erbjuda sig att hjälpa — och verkligen mena det — visar att du ser din partner och bryr dig om deras välmående." },
+      { category: "Romantik",       text: "Tänd ljus ikväll. Ät tillsammans utan distraktioner.", desc: "Det behövs ingen speciell anledning. Stämning skapar utrymme för samtal, kontakt och mjukhet." },
+      { category: "Gränser",        text: "Fråga din partner om de behöver tid för sig själva — och respektera svaret.", desc: "Att respektera din partners behov av enskildhet är ett tecken på mogen kärlek. Utrymme är inte avvisning." },
+      { category: "Kropp & Sinne",  text: "Prova något nytt tillsammans — en ny aktivitet, mat eller plats.", desc: "Nya upplevelser frigör dopamin, som hjärnan associerar med din partner. Det väcker känslan av förälskelse." },
+      { category: "Tacksamhet",     text: "Skriv ner tre saker du är tacksam för i din relation.", desc: "Tacksamhet riktar uppmärksamheten mot det goda. Det förändrar hur vi ser på vår partner och vår vardag." },
+      { category: "Ärlighet",       text: "Dela något du känner men sällan säger.", desc: "Sårbarhet bygger intimitet. Att dela det osagda — en rädsla, en dröm, en tack — skapar djupare kontakt." },
+      { category: "Hänsyn",         text: "Gör dig redo 10 minuter innan ni ska iväg — för din partners skull.", desc: "Små hänsyn visar respekt. Det berättar: 'Jag värdesätter din tid. Du betyder något.'" },
+      { category: "Kärlek & Handling", text: "Visa kärlek på det sätt din partner faktiskt tar emot den bäst.", desc: "Vi ger ofta kärlek på det sätt vi själva vill ha den. Fundera på om din partner föredrar ord, handlingar, beröring, tid eller gåvor." },
+      { category: "Reflektion",     text: "Stanna en stund och tänk: Vad är det bästa du ger din relation just nu?", desc: "Att reflektera utan självkritik är en styrka. Vad fungerar? Vad kan du bära med dig in i nästa dag?" }
+    ];
+
+    const questions = [
+      "Vilket minne från oss tillsammans ger dig mest värme när du tänker på det?",
+      "Vad är något du aldrig har berättat för mig men gärna vill?",
+      "Vad är din största dröm för de närmaste fem åren?",
+      "Vilket ögonblick i vår relation har betytt mest för dig?",
+      "Vad är det du uppskattar mest med mig men sällan säger?",
+      "Vad är din rädsla i vår relation, och hur kan jag stötta dig bättre?",
+      "Vilken version av dig själv hoppas du att jag ser?",
+      "Om du fick välja ett ögonblick att leva om med mig, vilket skulle det vara?",
+      "Vad fick dig att bli kär i mig från början?",
+      "Hur vill du att vi ska må som par om tio år?",
+      "Vad är det svåraste du har gått igenom, och vad lärde det dig?",
+      "Vad behöver du mer av i vår relation just nu?",
+      "Om vi kunde åka vart som helst imorgon utan begränsningar — vart skulle du välja?",
+      "Vilket av mina vanor tycker du är mest charmigt på ett löjligt sätt?",
+      "Om vår relation var en film — vilken genre skulle det vara?",
+      "Vad är det konstigaste du tycker om med mig?",
+      "Om du fick döpa om oss till ett parnamn, vad skulle vi heta?",
+      "Vilket djur liknar jag mest, och varför?",
+      "Om du fick en superhjältekraft för en dag — vad skulle du använda den till för vår skull?",
+      "Vad är den bästa måltiden vi ätit tillsammans?",
+      "Vilket ämne skulle du vilja lära dig mer om — helt för nöjes skull?",
+      "Vad är det första du tänker på när du hör mitt namn?",
+      "Vilket av dina intressen önskar du att jag delade mer?",
+      "Om vi startade ett företag tillsammans — vad skulle det sälja?"
     ];
 
     function getDayOfYear() {
-      const now = new Date();
-      const start = new Date(now.getFullYear(), 0, 0);
-      const diff = now - start;
-      const oneDay = 1000 * 60 * 60 * 24;
-      return Math.floor(diff / oneDay);
+      const now = new Date(), start = new Date(now.getFullYear(), 0, 0);
+      return Math.floor((now - start) / 86400000);
     }
-
+    function getTodayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    }
     function formatDate() {
       const d = new Date();
-      const days = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'];
+      const days   = ['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'];
       const months = ['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'];
       return `${days[d.getDay()]} · ${d.getDate()} ${months[d.getMonth()]}`;
     }
-
-    const todayIndex = getDayOfYear() % tips.length;
-
-    function renderTip() {
-      const tip = tips[todayIndex];
-      document.getElementById('tipNumber').textContent = String(todayIndex + 1).padStart(2, '0');
-      document.getElementById('tipCategory').textContent = tip.category;
-      document.getElementById('tipText').textContent = tip.text;
-      document.getElementById('tipDesc').textContent = tip.desc;
+    function safeKey(str) {
+      return str.trim().toLowerCase().replace(/[^a-zåäö0-9]+/g, '_');
     }
 
-    document.getElementById('dateStrip').textContent = formatDate();
-    renderTip();
+    let myName   = localStorage.getItem('myName')   || '';
+    let pairCode = localStorage.getItem('pairCode') || '';
+    let dbOff    = null;
+
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function goToQuiz() {
+      if (!myName || !pairCode) {
+        document.getElementById('inputPairCode').value = pairCode;
+        document.getElementById('inputMyName').value   = myName;
+        showScreen('screenSetup');
+      } else {
+        openQuiz();
+      }
+    }
+
+    function saveSetup() {
+      const code = document.getElementById('inputPairCode').value.trim();
+      const name = document.getElementById('inputMyName').value.trim();
+      const err  = document.getElementById('setupError');
+      if (!code || !name) { err.textContent = 'Fyll i båda fälten för att fortsätta.'; return; }
+      err.textContent = '';
+      pairCode = code; myName = name;
+      localStorage.setItem('pairCode', pairCode);
+      localStorage.setItem('myName',   myName);
+      openQuiz();
+    }
+
+    function resetSetup() {
+      if (dbOff) { dbOff(); dbOff = null; }
+      localStorage.removeItem('pairCode');
+      localStorage.removeItem('myName');
+      pairCode = ''; myName = '';
+      document.getElementById('inputPairCode').value = '';
+      document.getElementById('inputMyName').value   = '';
+      showScreen('screenSetup');
+    }
+
+    function openQuiz() {
+      const day = getDayOfYear();
+      const q   = questions[day % questions.length];
+
+      document.getElementById('pairBadge').textContent        = `♡  ${pairCode}`;
+      document.getElementById('questionText').textContent      = q;
+      document.getElementById('answerInput').value             = '';
+      document.getElementById('answerInputArea').style.display = 'block';
+      document.getElementById('answersArea').style.display     = 'none';
+      showScreen('screenQuiz');
+
+      const pKey  = safeKey(pairCode);
+      const nKey  = safeKey(myName);
+      const today = getTodayKey();
+      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).once('value').then(snap => {
+        if (snap.exists()) showAnswers();
+      });
+    }
+
+    function submitAnswer() {
+      const text = document.getElementById('answerInput').value.trim();
+      if (!text) return;
+      const pKey  = safeKey(pairCode);
+      const nKey  = safeKey(myName);
+      const today = getTodayKey();
+      const day   = getDayOfYear();
+
+      db.ref(`pairs/${pKey}/days/${today}`).update({ question: questions[day % questions.length], date: today });
+      db.ref(`pairs/${pKey}/days/${today}/answers/${nKey}`).set({ name: myName, text, ts: Date.now() })
+        .then(() => showAnswers());
+    }
+
+    function showAnswers() {
+      document.getElementById('answerInputArea').style.display = 'none';
+      document.getElementById('answersArea').style.display     = 'block';
+
+      if (dbOff) { dbOff(); dbOff = null; }
+
+      const pKey  = safeKey(pairCode);
+      const nKey  = safeKey(myName);
+      const today = getTodayKey();
+      const ref   = db.ref(`pairs/${pKey}/days/${today}/answers`);
+
+      dbOff = ref.on('value', snap => {
+        const data    = snap.val() || {};
+        const wrap    = document.getElementById('answersWrap');
+        const waiting = document.getElementById('waitingMsg');
+        wrap.innerHTML = '';
+
+        const entries = Object.entries(data).sort((a, b) => {
+          if (a[0] === nKey) return -1;
+          if (b[0] === nKey) return 1;
+          return (a[1].ts || 0) - (b[1].ts || 0);
+        });
+
+        entries.forEach(([k, v]) => {
+          const isMe   = k === nKey;
+          const bubble = document.createElement('div');
+          bubble.className = 'answer-bubble' + (isMe ? ' mine' : '');
+          bubble.innerHTML = `<div class="bubble-name">${v.name}${isMe ? ' · Du' : ''}</div><div class="bubble-text">${v.text}</div>`;
+          wrap.appendChild(bubble);
+        });
+
+        waiting.innerHTML = entries.length < 2
+          ? 'Väntar på din partners svar<span class="waiting-dots"></span>'
+          : '';
+      });
+    }
+
+    const todayIdx = getDayOfYear() % tips.length;
+    const tip      = tips[todayIdx];
+    document.getElementById('dateStrip').textContent   = formatDate();
+    document.getElementById('tipNumber').textContent   = String(todayIdx + 1).padStart(2, '0');
+    document.getElementById('tipCategory').textContent = tip.category;
+    document.getElementById('tipText').textContent     = tip.text;
+    document.getElementById('tipDesc').textContent     = tip.desc;
   </script>
 </body>
 </html>
