@@ -1,85 +1,163 @@
 # Systemdesign & Arkitektur
 
-En beskrivning av hur appen, Firebase och GitHub hänger ihop — hur data flödar, varför varje del finns och vilka beslut som tagits längs vägen.
+En beskrivning av hur appen, Firebase och GitHub hänger ihop — vad som körs var, hur data flödar och varför varje del finns.
 
 ---
 
-## Översikt
+## Var körs vad?
+
+Det finns ingen server i den här appen. All logik körs antingen i **mobilens webbläsare** eller är lagrad statiskt i **molntjänster**. GitHub och Firebase är bara lagring — de kör ingen kod.
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                        ANVÄNDARE                            │
-│                                                             │
-│   📱 Carl (iPhone/Safari)    📱 Annika (Samsung/Chrome)     │
-└────────────┬────────────────────────────┬───────────────────┘
-             │                            │
-             ▼                            ▼
-┌─────────────────────────────────────────────────────────────┐
-│              GitHub Pages (hosting)                         │
-│         carlgerhardsson.github.io/karlek-och-narvaro        │
-│                                                             │
-│   index.html  ─────  en enda fil, all logik inbäddad        │
-└────────────┬────────────────────────────────────────────────┘
-             │  läser bilder + sparar/synkar svar
-             ▼
-┌─────────────────────────────────────────────────────────────┐
-│                      Firebase (Google)                      │
-│                   Projekt: karlek-narvaro                   │
-│                                                             │
-│   ┌─────────────────┐      ┌──────────────────────────┐     │
-│   │ Realtime Database│      │       Storage            │     │
-│   │  (svar & sync)  │      │   (foton i photos/)      │     │
-│   └─────────────────┘      └──────────────────────────┘     │
-└─────────────────────────────────────────────────────────────┘
-             │  reverse geocoding (gratis, ingen nyckel)
-             ▼
-┌─────────────────────────────────────────────────────────────┐
-│              Nominatim / OpenStreetMap                      │
-│   Omvandlar GPS-koordinater → stadsnamn på svenska          │
-└─────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────┐
+│                    MOBILENS WEBBLÄSARE                           │
+│         (Safari på iPhone, Chrome på Samsung)                    │
+│                                                                  │
+│  ┌────────────────────────────────────────────────────────────┐  │
+│  │  index.html  —  laddas ned en gång, körs lokalt            │  │
+│  │                                                            │  │
+│  │  • Visar UI (tips, quiz, resultat)                         │  │
+│  │  • Väljer dagens bild (getDayOfYear % antal bilder)        │  │
+│  │  • Hämtar bildfil som rådata (Blob)                        │  │
+│  │  • Läser GPS ur bilden med exifr.js          ← lokalt      │  │
+│  │  • Konverterar HEIC → JPEG med heic2any      ← lokalt      │  │
+│  │  • Frågar Nominatim om platsnamn             → internet    │  │
+│  │  • Sparar svar till Firebase                 → internet    │  │
+│  │  • Lyssnar på partners svar i realtid        ← internet    │  │
+│  └────────────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────────┘
+          │ laddar ned index.html        │ hämtar bildfil
+          ▼                              ▼
+┌──────────────────┐          ┌────────────────────────┐
+│  GitHub Pages    │          │  Firebase Storage       │
+│  (statisk fil)   │          │  photos/bild.heic       │
+└──────────────────┘          └────────────────────────┘
+          │ sparar/läser svar            │ platsnamn från GPS
+          ▼                              ▼
+┌──────────────────┐          ┌────────────────────────┐
+│  Firebase        │          │  Nominatim             │
+│  Realtime DB     │          │  (OpenStreetMap API)   │
+└──────────────────┘          └────────────────────────┘
 ```
 
 ---
 
-## GitHub Pages — Hosting
+## Steg-för-steg: Vad händer när du öppnar appen?
 
-**Vad:** Statisk webbhosting direkt från `main`-branchen i repot.
+### 1. Webbläsaren laddar appen
+Telefonen hämtar `index.html` från GitHub Pages. Det är en enda fil (~37 KB) som innehåller all HTML, CSS och JavaScript. Inget annat behöver laddas ned för att appen ska fungera grundläggande — utom externa bibliotek (Firebase SDK, exifr, heic2any) som hämtas från CDN.
 
-**Varför:** Gratis, automatisk deploy vid varje commit, ingen byggprocess. Hela appen är en enda HTML-fil utan beroenden som behöver kompileras.
+### 2. Startsidan visas direkt
+Dagens tips väljs ur en hårdkodad lista med 22 tips, baserat på vilken dag på året det är (`getDayOfYear() % 22`). Inget nätverksanrop krävs — tipset finns redan i filen.
 
-**Flöde:**
-1. Kod pushas till `main` på GitHub
-2. GitHub Pages bygger om automatiskt (~1 minut)
-3. Ny version är live på `carlgerhardsson.github.io/karlek-och-narvaro`
+### 3. Du trycker på "♡ Dagens fråga"
+Appen kollar om parnamn och personnamn finns sparade i telefonens `localStorage`. Om inte visas inställningsskärmen där du fyller i dem. De sparas lokalt och behöver aldrig fyllas i igen.
 
-**Begränsning:** Statisk hosting — ingen server-side logik. All dynamik sköts via Firebase och JavaScript i webbläsaren.
+### 4. Appen hämtar bildlistan från Firebase Storage
+```
+Mobilen → Firebase Storage: "Lista alla filer i photos/"
+Firebase → Mobilen: [bild1.heic, bild2.heic, bild3.jpg, ...]
+```
+Appen räknar ut index: `getDayOfYear() % antal bilder`. Samma beräkning görs på båda telefonerna — de väljer därmed alltid samma bild samma dag utan att kommunicera med varandra.
+
+### 5. Bildfilen hämtas som rådata
+```
+Mobilen → Firebase Storage: "Ge mig download-URL för bild3.heic"
+Firebase → Mobilen: "https://firebasestorage.googleapis.com/..."
+Mobilen → Firebase CDN: "Hämta filen"
+Firebase CDN → Mobilen: [rådata, ~3-8 MB]
+```
+Filen sparas i minnet som en `Blob` — ett binärt dataobjekt.
+
+### 6. GPS läses ur bilden — helt lokalt, inget nätverksanrop
+Biblioteket `exifr.js` tolkar EXIF-metadata direkt ur Blob:en i webbläsarens minne:
+```
+exifr.gps(blob) → { latitude: 57.7089, longitude: 11.9746 }
+```
+Inga koordinater skickas till någon server i detta steg.
+
+### 7. HEIC konverteras till JPEG om det behövs — helt lokalt
+Om filen är `.heic` och webbläsaren är Chrome/Android (som inte stödjer HEIC):
+```
+heic2any({ blob, toType: 'image/jpeg' }) → jpegBlob
+URL.createObjectURL(jpegBlob) → "blob:https://..."
+<img src="blob:https://...">
+```
+Konverteringen sker i webbläsarens minne. Ingen data lämnar telefonen i detta steg.
+
+### 8. Platsnamnet slås upp via Nominatim
+Med GPS-koordinaterna från steg 6 görs tre–fem anrop till OpenStreetMap:
+```
+Mobilen → Nominatim: "Vad heter platsen vid 57.7089, 11.9746?"
+Nominatim → Mobilen: "Göteborg"
+
+Mobilen → Nominatim: "Vad heter platsen vid 60.5, 13.5?" (offset för distraktor)
+Nominatim → Mobilen: "Falun"
+
+Mobilen → Nominatim: "Vad heter platsen vid 55.6, 13.0?" (offset för distraktor)
+Nominatim → Mobilen: "Malmö"
+```
+Tre alternativ blandas slumpmässigt och visas som A/B/C. Rätt svar är det första.
+
+Om bilden saknar GPS hoppas steg 6–8 över och ett fritextsvar visas istället.
+
+### 9. Du väljer ett svar
+Svaret sparas till Firebase Realtime Database:
+```
+Mobilen → Firebase DB:
+  pairs/calleoannika/days/2026-03-08/photo/answers/calle = {
+    name: "Calle",
+    answer: "Göteborg",
+    correct: true,
+    type: "choice",
+    ts: 1741430400000
+  }
+```
+
+### 10. Realtidslyssnaren triggas på partnerns telefon
+Firebase skickar automatiskt ut en notis till alla som lyssnar på samma sökväg. Annikas telefon tar emot Calles svar direkt utan att hon behöver göra något:
+```
+Firebase DB → Annikas telefon: "Calle har svarat"
+Annikas telefon: uppdaterar UI med Calles svar
+```
+När Annika också svarat visas båda svaren och rätt plats avslöjas.
 
 ---
 
-## Firebase Realtime Database — Realtidssynk av svar
+## Vad händer vid deploy?
 
-**Vad:** En JSON-databas i realtid. Alla ändringar propageras direkt till alla anslutna klienter.
+```
+Calle/Claude skriver kod
+        ↓
+Pushas till main på GitHub
+        ↓
+GitHub Pages bygger om automatiskt (~1 minut)
+        ↓
+Nästa gång telefonen laddar appen hämtas den nya index.html
+```
 
-**Varför:** Gör att Annika kan se när Carl svarat (och vice versa) utan att ladda om sidan. Ingen polling, inga websockets att hantera manuellt — Firebase sköter det.
+Inga byggsteg, ingen CI/CD-pipeline, ingen server att starta om. GitHub Pages serverar filen direkt.
 
-**Datastruktur:**
+---
+
+## Firebase-datastruktur
 
 ```
 pairs/
-  {parnamn}/                        ← t.ex. "calleoannika"
+  {parnamn}/                          ← t.ex. "calleoannika"
     days/
-      {YYYY-MM-DD}/                 ← t.ex. "2026-03-08"
+      {YYYY-MM-DD}/                   ← t.ex. "2026-03-08"
         photo/
           date: "2026-03-08"
           filename: "goteborg.heic"
           answers/
-            {personnamn}/           ← t.ex. "calle"
+            calle/
               name: "Calle"
               answer: "Göteborg"
               correct: true
-              type: "choice"        ← eller "freetext"
+              type: "choice"
               ts: 1741430400000
-            {personnamn}/           ← t.ex. "annika"
+            annika/
               name: "Annika"
               answer: "Malmö"
               correct: false
@@ -88,117 +166,47 @@ pairs/
 ```
 
 **Viktiga designbeslut:**
-
-- **`/photo/answers/`** — Foto-svaren sparas i en separat nod för att inte krocka med gamla svar från den tidigare kunskapsquizen (som låg direkt under `/answers/`). Detta är en läxa från ett tidigt produktionsfel.
-- **Parnamn som nyckel** — Båda partners måste ange exakt samma parnamn. Det används som nyckel i databasen. Inget login krävs.
-- **`safeKey()`** — Parnamn och personnamn normaliseras (lowercase, specialtecken bort) innan de används som Firebase-nycklar, eftersom Firebase inte tillåter `/`, `.`, `#`, `$` m.fl. i nycklar.
-- **`ts` (timestamp)** — Varje svar får en Unix-timestamp för att sortera vems svar som visas först (den som svarade senast visas sist).
-
----
-
-## Firebase Storage — Bildlagring
-
-**Vad:** Objektlagring för binärfiler (bilder).
-
-**Varför:** Google Photos API slutade tillåta läsning av befintliga album i april 2025. Firebase Storage på Blaze-planen ger full kontroll — bilderna laddas upp manuellt via Firebase Console och serveras via CDN.
-
-**Mapp:** Alla bilder ska ligga i `photos/` — appen listar hela mappen och väljer bild via `getDayOfYear() % totalImages`.
-
-**Åtkomstkontroll:**
-```
-match /photos/{fileName} {
-  allow read: if true;   ← publik läsning
-}
-```
-Skrivning kräver inloggning (görs via Console, aldrig från appen).
-
-**CORS:** Eftersom appen körs på `github.io` och bilderna hämtas från `firebasestorage.app` behövs CORS-konfiguration. Körs en gång via Google Cloud Shell:
-```bash
-echo '[{"origin":["https://carlgerhardsson.github.io"],"method":["GET"],"maxAgeSeconds":3600}]' > cors.json
-gsutil cors set cors.json gs://karlek-narvaro.firebasestorage.app
-```
+- **`/photo/answers/`** — Separerat från `/answers/` för att inte krocka med gamla svar från den tidigare kunskapsquizen. Läxa från ett tidigt produktionsfel.
+- **Parnamn som nyckel** — Inget login. Båda anger samma parnamn, det används som nyckel i databasen.
+- **`safeKey()`** — Parnamn normaliseras (lowercase, specialtecken → `_`) eftersom Firebase inte tillåter `.`, `/`, `#`, `$` i nycklar.
+- **`!data.exists()` i DB-regler** — Ett svar kan bara skrivas en gång per person och dag. Ingen kan skriva över sin partners svar.
 
 ---
 
-## EXIF & GPS-läsning — exifr.js
+## Lokal state i telefonen
 
-**Vad:** JavaScript-bibliotek som läser metadata (EXIF) direkt ur bildfilen i webbläsaren.
+Inget login-system. Identitet lagras i telefonens `localStorage` (persistent, men bara på den enheten):
 
-**Varför:** GPS-koordinater är inbäddade i bildfilen av kameran/telefonen. Appen behöver aldrig skicka dessa till en server — allt sker lokalt.
-
-**Flöde:**
-1. Bild hämtas som `Blob` (rådata) från Firebase Storage
-2. `exifr.gps(blob)` returnerar `{ latitude, longitude }` om koordinater finns
-3. Koordinaterna skickas till Nominatim för reverse geocoding
-
-**Om GPS saknas:** Appen faller tillbaka till fritextsvar — båda gissar och jämför efteråt.
-
----
-
-## Nominatim / OpenStreetMap — Reverse Geocoding
-
-**Vad:** Gratis API som omvandlar koordinater till platsnamn.
-
-**Varför:** Inget API-nyckel krävs. Täcker hela världen. Returnerar svenska namn med `Accept-Language: sv`.
-
-**Flöde för att bygga svarsalternativ:**
-1. Rätt plats: `reverseGeocode(lat, lng)` → t.ex. "Göteborg"
-2. Distraktorer: Samma anrop med koordinat-offset (~200–400 km bort) → t.ex. "Oslo", "Malmö"
-3. Tre alternativ blandas slumpmässigt och presenteras som A/B/C
-
-**Fallback:** Om Nominatim returnerar samma stad för flera offset-koordinater kompletteras med hårdkodade städer (Stockholm, Berlin, Paris etc.).
-
----
-
-## HEIC-hantering — heic2any
-
-**Vad:** JavaScript-bibliotek som konverterar HEIC/HEIF-bilder till JPEG direkt i webbläsaren.
-
-**Varför:** iPhone sparar foton i HEIC-format. Safari stödjer detta nativt, men Android/Chrome gör det inte. Utan konvertering visas en bruten bild för Annika.
-
-**Flöde:**
-1. Kolla om filnamnet slutar på `.heic` eller `.heif`
-2. Testa om webbläsaren kan visa HEIC nativt (liten test-bild)
-3. Om inte → konvertera `Blob` till JPEG med `heic2any()`
-4. Skapa en lokal URL med `URL.createObjectURL()` och sätt som `<img src>`
-
-EXIF-läsningen sker alltid på **originalblobben** (innan konvertering) eftersom metadata kan gå förlorad vid konvertering.
-
----
-
-## Daglig bildrotation
-
-Appen väljer dagens bild deterministiskt — samma bild visas för båda partners oavsett när på dagen de öppnar appen:
-
-```javascript
-const idx = getDayOfYear() % items.length;
-```
-
-`getDayOfYear()` returnerar dag 1–365. Med t.ex. 50 bilder roterar appen 50 dagar i taget. Bilder sorteras i den ordning Firebase Storage returnerar dem (alfabetiskt på filnamn) — namnge filer för att styra ordningen om så önskas.
-
----
-
-## Lokal state & localStorage
-
-Inget login-system. Identitet hanteras med `localStorage`:
-
-| Nyckel | Värde | Syfte |
-|--------|-------|-------|
+| Nyckel | Exempel | Syfte |
+|--------|---------|-------|
 | `pairCode` | `"CarlOchAnnika"` | Gemensam nyckel i Firebase |
 | `myName` | `"Calle"` | Visningsnamn och Firebase-undernyckel |
 
-Rensas med "Byt parkod / namn"-länken i appen.
+Rensas via "Byt parkod / namn" i appen.
+
+---
+
+## Säkerhetsgränser
+
+| Vad | Skydd |
+|-----|-------|
+| Firebase API-nyckel i källkod | Nyckeln är begränsad till `carlgerhardsson.github.io` i Google Cloud |
+| Vem kan läsa bilder | Publik läsning tillåten (avsiktligt) |
+| Vem kan ladda upp bilder | Endast via Firebase Console (write: false i Storage-regler) |
+| Vem kan skriva svar | Vem som helst med rätt parnamn — men bara en gång per dag per person |
+| Överskrivning av svar | Blockerat med `!data.exists()` i Database-regler |
 
 ---
 
 ## Sammanfattning: Varför denna stack?
 
 | Krav | Lösning | Alternativ som övervägdes |
-|------|---------|--------------------------|
+|------|---------|-----------------------------|
 | Gratis hosting | GitHub Pages | Vercel, Netlify |
-| Realtidssynk utan server | Firebase Realtime Database | Supabase, polling |
-| Bildlagring med full kontroll | Firebase Storage | Google Photos API (slutade fungera april 2025) |
-| GPS ur bilder | exifr.js (browser) | Server-side EXIF-parsing |
+| Ingen server att drifta | Allt i webbläsaren | Node.js backend |
+| Realtidssynk | Firebase Realtime Database | Supabase, polling |
+| Bildlagring | Firebase Storage | Google Photos API (stängde april 2025) |
+| GPS ur bilder | exifr.js i webbläsaren | Server-side EXIF-parsing |
 | Platsnamn från koordinater | Nominatim (gratis) | Google Maps API (kräver betalkort) |
-| HEIC på Android | heic2any (browser) | Konvertera vid uppladdning |
-| Enkel deploy | Single HTML-fil | React, Vue, etc. |
+| HEIC på Android | heic2any i webbläsaren | Konvertera vid uppladdning |
+| Enkel deploy | En enda HTML-fil | React, Vue, byggprocess |
